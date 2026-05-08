@@ -1,0 +1,590 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id               Int      @id @default(1)
+  fullName         String
+  title            String
+  department       String
+  institution      String
+  email            String
+  officeLocation   String
+  officeHours      String
+  bio              String   @db.Text
+  photoUrl         String   @default("")
+  cvUrl            String   @default("")
+  // ── Per-location photos (each can be uploaded separately) ──
+  navbarPhotoUrl   String   @default("")   // Navbar top bar (40px circle)
+  heroPhotoUrl     String   @default("")   // Homepage hero (220px circle)
+  aboutPhotoUrl    String   @default("")   // About page (200px circle)
+  contactPhotoUrl  String   @default("")   // Contact page (150px circle)
+  footerPhotoUrl   String   @default("")   // Footer (48px circle)
+  adminPhotoUrl    String   @default("")   // Admin panel sidebar & dropdown
+  academicProfiles Json
+  // About page enhancements
+  vision           String?  @db.Text
+  mission          String?  @db.Text
+  skills           Json?
+  languages        Json?
+  education        Json?
+  workExperience   Json?
+  certifications   Json?
+  memberships      Json?
+  videoIntroUrl    String?
+  // Contact enhancements
+  whatsapp         String?
+  mapEmbedUrl      String?
+  buildingImageUrl String?
+  faq              Json?
+  // New fields
+  leadershipPositions Json?   // Leadership positions
+  mediaAppearances    Json?   // Media appearances/press
+  emergencyContact    String? // Emergency contact info
+  updatedAt        DateTime @updatedAt
+}
+
+model Publication {
+  id          String          @id @default(uuid())
+  title       String
+  authors     Json
+  venue       String
+  year        Int
+  type        PublicationType
+  doi         String?
+  url         String?
+  abstract    String?         @db.Text
+  pdfUrl      String?
+  coverImage  String?
+  published   Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum PublicationType {
+  journal
+  conference
+  book
+  book_chapter
+  technical_report
+  other
+}
+
+model ResearchProject {
+  id             String        @id @default(uuid())
+  slug           String        @unique
+  title          String
+  description    String        @db.Text
+  status         ProjectStatus
+  startYear      Int
+  endYear        Int?
+  fundingSources Json?
+  collaborators  Json?
+  externalUrl    String?
+  imageUrl       String?
+  teamMembers    Json?
+  githubUrl      String?
+  documents      Json?
+  milestones     Json?
+  tags           Json?
+  published      Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+enum ProjectStatus {
+  active
+  completed
+}
+
+model Course {
+  id           String       @id @default(uuid())
+  name         String
+  code         String
+  term         String
+  status       CourseStatus
+  syllabusUrl  String?
+  externalUrl  String?
+  description  String?      @db.Text
+  bannerImage  String?
+  zoomUrl      String?
+  classroomUrl String?
+  schedule     Json?
+  materials    Json?
+  published    Boolean      @default(true)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+enum CourseStatus {
+  active
+  archived
+}
+
+model Student {
+  id              String        @id @default(uuid())
+  name            String
+  degreeLevel     DegreeLevel
+  researchTopic   String
+  status          StudentStatus
+  thesisTitle     String?
+  graduationYear  Int?
+  currentPosition String?
+  profileUrl      String?
+  photoUrl        String?
+  achievements    Json?
+  published       Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+enum DegreeLevel {
+  PhD
+  Masters
+}
+
+enum StudentStatus {
+  current
+  alumni
+}
+
+model Award {
+  id            String        @id @default(uuid())
+  name          String
+  organization  String
+  year          Int
+  category      AwardCategory
+  amount        String?
+  fundingPeriod String?
+  description   String?       @db.Text
+  imageUrl      String?
+  published     Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+enum AwardCategory {
+  award
+  grant
+  fellowship
+  honor
+  distinction
+}
+
+model BlogPost {
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique
+  publishedAt  DateTime
+  excerpt      String   @db.VarChar(200)
+  content      String   @db.LongText
+  tags         Json?
+  featuredImage String?
+  draft        Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id          String   @id @default(uuid())
+  email       String   @unique
+  subscribedAt DateTime @default(now())
+}
+
+model BlogComment {
+  id          String   @id @default(uuid())
+  postId      String
+  name        String
+  email       String
+  content     String   @db.Text
+  approved    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Event {
+  id               String   @id @default(uuid())
+  name             String
+  date             DateTime
+  location         String
+  description      String   @db.Text
+  externalUrl      String?
+  posterImage      String?
+  registrationUrl  String?
+  streamUrl        String?
+  published        Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Collaborator {
+  id          String           @id @default(uuid())
+  name        String
+  institution String
+  area        String
+  profileUrl  String?
+  logoUrl     String?
+  type        CollaboratorType
+  published   Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+enum CollaboratorType {
+  individual
+  institution
+}
+
+model Resource {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.VarChar(150)
+  url         String
+  category    String?
+  iconUrl     String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model GalleryItem {
+  id        String   @id @default(uuid())
+  imageUrl  String
+  alt       String
+  caption   String
+  category  String
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdminUser {
+  id             Int       @id @default(1)
+  username       String    @unique
+  passwordHash   String
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+  totpSecret     String?
+  totpEnabled    Boolean   @default(false)
+  updatedAt      DateTime  @updatedAt
+}
+
+model SiteSettings {
+  id              Int      @id @default(1)
+  siteTitle       String
+  tagline         String?
+  footerText      String
+  contactEmail    String
+  maintenanceMode Boolean  @default(false)
+  maintenanceMsg  String?
+  socialLinks     Json
+  hiddenSections  Json
+  heroVideoUrl    String?
+  heroImageUrl    String?
+  // ── Home page section controls ──
+  showAnnouncements   Boolean @default(true)
+  showStats           Boolean @default(true)
+  showNewsSlider      Boolean @default(true)
+  showUpcomingEvents  Boolean @default(true)
+  showPublications    Boolean @default(true)
+  showTestimonials    Boolean @default(true)
+  showResearchHighlights Boolean @default(true)
+  showAchievements    Boolean @default(true)
+  showQuickLinks      Boolean @default(true)
+  heroTitle           String?
+  heroSubtitle        String?
+  heroCTAText         String?
+  heroCTALink         String?
+  updatedAt       DateTime @updatedAt
+}
+
+model ContactMessage {
+  id         String   @id @default(uuid())
+  name       String
+  email      String
+  message    String   @db.Text
+  read       Boolean  @default(false)
+  receivedAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id          String   @id @default(uuid())
+  action      String
+  section     String
+  itemId      String?
+  itemTitle   String?
+  performedBy String
+  performedAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        String   @id @default(uuid())
+  name      String
+  role      String
+  content   String   @db.Text
+  photoUrl  String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Announcement {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  link      String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AppointmentRequest {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  date        DateTime
+  timeSlot    String
+  purpose     String   @db.Text
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+}
+
+// ── LMS MODELS ──
+
+model CourseMaterial {
+  id          String   @id @default(uuid())
+  courseId    String
+  title       String
+  type        String   // lecture_note, video, assignment, quiz, other
+  url         String?
+  content     String?  @db.Text
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StudentMilestone {
+  id          String   @id @default(uuid())
+  studentId   String
+  title       String
+  description String?  @db.Text
+  dueDate     DateTime?
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model CollaborationRequest {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  institution String
+  area        String
+  message     String   @db.Text
+  status      String   @default("pending")
+  createdAt   DateTime @default(now())
+}
+
+model PageView {
+  id        String   @id @default(uuid())
+  path      String
+  viewedAt  DateTime @default(now())
+  userAgent String?
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  sessionId String
+  role      String   // user | assistant
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+}
+
+// ── NEW MODELS ──
+
+model ResearchDataset {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  url         String?
+  fileUrl     String?
+  format      String?  // CSV, JSON, etc.
+  size        String?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ResearchPresentation {
+  id          String   @id @default(uuid())
+  title       String
+  event       String
+  date        DateTime
+  slideUrl    String?
+  videoUrl    String?
+  description String?  @db.Text
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model StudentFeedback {
+  id        String   @id @default(uuid())
+  courseId  String
+  rating    Int      // 1-5
+  comment   String?  @db.Text
+  anonymous Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model CourseAttendance {
+  id        String   @id @default(uuid())
+  courseId  String
+  studentName String
+  date      DateTime
+  present   Boolean  @default(true)
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model CourseGrade {
+  id          String   @id @default(uuid())
+  courseId    String
+  studentName String
+  assessment  String   // midterm, final, assignment, etc.
+  score       Float
+  maxScore    Float    @default(100)
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AdminNotification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String   @db.Text
+  type      String   @default("info") // info, warning, success, error
+  read      Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+}
+
+model BackupLog {
+  id        String   @id @default(uuid())
+  filename  String
+  size      String?
+  status    String   @default("completed")
+  createdAt DateTime @default(now())
+}
+
+model SecurityLog {
+  id          String   @id @default(uuid())
+  event       String   // login_success, login_failed, locked, etc.
+  username    String?
+  ipAddress   String?
+  userAgent   String?
+  details     String?
+  createdAt   DateTime @default(now())
+}
+
+model ResourceAnalytics {
+  id         String   @id @default(uuid())
+  resourceId String
+  views      Int      @default(0)
+  downloads  Int      @default(0)
+  updatedAt  DateTime @updatedAt
+}
+
+// ── NEW MODELS ──
+
+model ResearchProposal {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  status      String   @default("draft") // draft, submitted, approved, rejected
+  fundingBody String?
+  amount      String?
+  deadline    DateTime?
+  submittedAt DateTime?
+  notes       String?  @db.Text
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ResearchRepository {
+  id          String   @id @default(uuid())
+  title       String
+  description String   @db.Text
+  repoUrl     String?
+  demoUrl     String?
+  language    String?
+  stars       Int      @default(0)
+  tags        Json?
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CourseForum {
+  id        String   @id @default(uuid())
+  courseId  String
+  title     String
+  content   String   @db.Text
+  author    String
+  pinned    Boolean  @default(false)
+  replies   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CourseRegistration {
+  id          String   @id @default(uuid())
+  courseId    String
+  studentName String
+  email       String
+  phone       String?
+  status      String   @default("pending") // pending, approved, rejected
+  notes       String?
+  createdAt   DateTime @default(now())
+}
+
+model CourseFeedback {
+  id        String   @id @default(uuid())
+  courseId  String
+  rating    Int      // 1-5
+  comment   String?  @db.Text
+  anonymous Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model TeamMember {
+  id           String   @id @default(uuid())
+  name         String
+  role         String
+  email        String?
+  photoUrl     String?
+  bio          String?  @db.Text
+  researchArea String?
+  joinedYear   Int?
+  published    Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model WebhookIntegration {
+  id        String   @id @default(uuid())
+  name      String
+  url       String
+  events    Json     // array of event types to trigger on
+  secret    String?
+  active    Boolean  @default(true)
+  lastCalled DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
