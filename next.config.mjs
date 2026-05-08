@@ -5,6 +5,14 @@ const nextConfig = {
     optimizePackageImports: ["@prisma/client"],
   },
 
+  // Tell webpack to ignore optional packages not installed
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.externals = [...(config.externals || []), "openai"];
+    }
+    return config;
+  },
+
   // Allow images from any domain (for Unsplash demo images etc.)
   images: {
     remotePatterns: [
