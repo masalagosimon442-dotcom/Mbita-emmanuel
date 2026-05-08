@@ -15,6 +15,9 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
+  // Force all pages to be dynamic — no DB calls at build time
+  output: "standalone",
+
   // Tell webpack to ignore optional packages not installed
   webpack: (config, { isServer }) => {
     if (isServer) {
