@@ -35,6 +35,7 @@ const nextConfig = {
   logging: {
     fetches: { fullUrl: false },
   },
+  // v2
 };
 
 export default nextConfig;
