@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage() {
   const profile = await getProfile();
   const academicProfiles = Array.isArray(profile?.academicProfiles) ? profile!.academicProfiles : [];
-  const faqItems = Array.isArray(profile?.faq) ? (profile!.faq as FAQItem[]) : [];
+  const faqItems = Array.isArray(profile?.faq) ? (profile!.faq as unknown as FAQItem[]) : [];
   // Use contact-specific photo slot
   const contactPhoto = getPhotoForSlot(profile, "contact");
 

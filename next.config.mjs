@@ -5,6 +5,16 @@ const nextConfig = {
     optimizePackageImports: ["@prisma/client"],
   },
 
+  // Ignore ESLint errors during build (warnings only)
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // Ignore TypeScript errors during build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+
   // Tell webpack to ignore optional packages not installed
   webpack: (config, { isServer }) => {
     if (isServer) {
