@@ -62,15 +62,20 @@ export default function AboutAdminPage() {
     e.preventDefault();
     setSaving(true);
     try {
+      // Fetch current profile to merge with changes
+      const currentRes = await fetch("/api/admin/profile");
+      const current = currentRes.ok ? await currentRes.json() : {};
+      
       const res = await fetch("/api/admin/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...current, ...form }),
       });
       if (res.ok) {
         showToast("success", "About page saved successfully!");
       } else {
-        showToast("error", "Failed to save changes.");
+        const data = await res.json().catch(() => ({}));
+        showToast("error", data.error || "Failed to save changes.");
       }
     } catch {
       showToast("error", "An error occurred.");
