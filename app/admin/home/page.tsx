@@ -100,7 +100,8 @@ export default function HomeAdminPage() {
       if (res.ok) {
         showToast("success", "Home settings saved successfully!");
       } else {
-        showToast("error", "Failed to save settings.");
+        const data = await res.json().catch(() => ({}));
+        showToast("error", data.error || "Failed to save settings.");
       }
     } catch {
       showToast("error", "An error occurred.");

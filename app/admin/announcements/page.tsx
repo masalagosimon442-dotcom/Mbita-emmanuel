@@ -30,11 +30,18 @@ export default function AnnouncementsAdminPage() {
   const [form, setForm] = useState<FormData>(empty);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+
+  function showToast(type: "success" | "error", message: string) {
+    setToast({ type, message });
+    setTimeout(() => setToast(null), 4000);
+  }
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
     const res = await fetch("/api/admin/announcements");
     if (res.ok) setItems(await res.json());
+    else showToast("error", "Failed to load announcements.");
     setLoading(false);
   }, []);
 
@@ -52,17 +59,37 @@ export default function AnnouncementsAdminPage() {
     setSaving(true);
     const method = editing ? "PUT" : "POST";
     const body = editing ? { id: editing.id, ...form } : form;
-    await fetch("/api/admin/announcements", { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-    setSaving(false);
-    setModalOpen(false);
-    fetchItems();
+    try {
+      const res = await fetch("/api/admin/announcements", { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (res.ok) {
+        showToast("success", editing ? "Announcement updated." : "Announcement added.");
+        setModalOpen(false);
+        fetchItems();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        showToast("error", data.error ?? "Failed to save announcement.");
+      }
+    } catch {
+      showToast("error", "An unexpected error occurred.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    await fetch(`/api/admin/announcements?id=${deleteId}`, { method: "DELETE" });
-    setDeleteId(null);
-    fetchItems();
+    try {
+      const res = await fetch(`/api/admin/announcements?id=${deleteId}`, { method: "DELETE" });
+      setDeleteId(null);
+      if (res.ok) {
+        showToast("success", "Announcement deleted.");
+        fetchItems();
+      } else {
+        showToast("error", "Failed to delete announcement.");
+      }
+    } catch {
+      showToast("error", "An unexpected error occurred.");
+    }
   };
 
   const inputClass = "w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary";
@@ -73,6 +100,12 @@ export default function AnnouncementsAdminPage() {
         <h1 className="text-2xl font-bold text-navy-900">Announcements</h1>
         <Button variant="primary" onClick={openCreate}>+ Add Announcement</Button>
       </div>
+
+      {toast && (
+        <div role="alert" className={`mb-4 p-3 rounded-lg text-sm font-medium ${toast.type === "success" ? "bg-green-50 border border-green-300 text-green-800" : "bg-red-50 border border-red-300 text-red-700"}`}>
+          {toast.message}
+        </div>
+      )}
 
       {loading ? (
         <p className="text-navy-500">Loading...</p>
