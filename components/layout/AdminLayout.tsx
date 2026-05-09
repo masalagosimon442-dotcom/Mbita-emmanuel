@@ -27,6 +27,8 @@ const sidebarGroups = [
   {
     label: "Content",
     links: [
+      { href: "/admin/home", label: "Home Page", icon: "🏠" },
+      { href: "/admin/about", label: "About Page", icon: "ℹ️" },
       { href: "/admin/profile", label: "Profile", icon: "👤" },
       { href: "/admin/research", label: "Research", icon: "🔬" },
       { href: "/admin/datasets", label: "Datasets", icon: "📊" },
