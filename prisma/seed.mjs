@@ -35,9 +35,9 @@ async function main() {
   await prisma.adminUser.upsert({
     where: { id: 1 },
     update: {},
-    create: { id: 1, username: 'Mbita Deogratias', passwordHash },
+    create: { id: 1, username: 'Mbita', passwordHash },
   });
-  console.log('✓ AdminUser seeded  (username: Mbita Deogratias, password: mbita@12345)');
+  console.log('✓ AdminUser seeded  (username: Mbita, password: mbita@12345)');
 
   // Profile
   await prisma.profile.upsert({
@@ -283,7 +283,7 @@ async function main() {
   console.log('✓ Announcements seeded');
 
   console.log('\n🌱 Database seeded successfully!');
-  console.log('📋 Login credentials: username=Mbita Deogratias, password=mbita@12345');
+  console.log('📋 Login credentials: username=Mbita, password=mbita@12345');
   console.log('🌐 Open http://localhost:3000 in your browser');
 }
 
