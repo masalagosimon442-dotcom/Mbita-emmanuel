@@ -27,7 +27,7 @@ export default function ResearchClient({ projects, profileBio }: ResearchClientP
   }, [projects]);
 
   const allYears = useMemo(() =>
-    [...new Set(projects.map((p) => p.startYear))].sort((a, b) => b - a),
+    Array.from(new Set(projects.map((p) => p.startYear))).sort((a, b) => b - a),
     [projects]
   );
 

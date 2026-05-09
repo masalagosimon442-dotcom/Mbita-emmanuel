@@ -20,7 +20,7 @@ export default function TeachingClient({ courses }: TeachingClientProps) {
 
   // Derive unique terms
   const allTerms = useMemo(() =>
-    [...new Set(courses.map((c) => c.term).filter(Boolean))].sort().reverse(),
+    Array.from(new Set(courses.map((c) => c.term).filter(Boolean))).sort().reverse(),
     [courses]
   );
 

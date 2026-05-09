@@ -42,7 +42,7 @@ export default function TeamPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/team?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());
@@ -52,7 +52,7 @@ export default function TeamPage() {
 
   const handleBulkStatus = async (published: boolean) => {
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       const item = items.find(i => i.id === id);
       if (item) {
         await fetch("/api/admin/team", {

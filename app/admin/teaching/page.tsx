@@ -46,7 +46,7 @@ export default function AdminTeachingPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/teaching?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());

@@ -44,7 +44,7 @@ export default function AdminEventsPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/events?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());
@@ -54,7 +54,7 @@ export default function AdminEventsPage() {
 
   const handleBulkStatus = async (published: boolean) => {
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch("/api/admin/events", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

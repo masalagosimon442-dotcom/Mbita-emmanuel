@@ -54,7 +54,7 @@ export default function PublicationsClient({ publications }: PublicationsClientP
 
   // Derive unique filter options from data
   const years = useMemo(() =>
-    [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a),
+    Array.from(new Set(publications.map((p) => p.year))).sort((a, b) => b - a),
     [publications]
   );
 
@@ -67,7 +67,7 @@ export default function PublicationsClient({ publications }: PublicationsClientP
   }, [publications]);
 
   const venues = useMemo(() =>
-    [...new Set(publications.map((p) => p.venue).filter(Boolean))].sort(),
+    Array.from(new Set(publications.map((p) => p.venue).filter(Boolean))).sort(),
     [publications]
   );
 

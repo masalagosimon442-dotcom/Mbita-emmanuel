@@ -45,7 +45,7 @@ export default function AdminGalleryPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/gallery?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());
@@ -55,7 +55,7 @@ export default function AdminGalleryPage() {
 
   const handleBulkStatus = async (published: boolean) => {
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch("/api/admin/gallery", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -172,7 +172,7 @@ export default function AdminGalleryPage() {
             className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
           >
             <option value="all">All Categories</option>
-            {[...new Set(items.map((i) => i.category))].map((cat) => (
+            {Array.from(new Set(items.map((i) => i.category))).map((cat) => (
               <option key={cat} value={cat}>{cat}</option>
             ))}
           </select>

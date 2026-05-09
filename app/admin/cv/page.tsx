@@ -56,7 +56,7 @@ export default function AdminCVPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/cv?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());
@@ -66,7 +66,7 @@ export default function AdminCVPage() {
 
   const handleBulkStatus = async (published: boolean) => {
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch("/api/admin/cv", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

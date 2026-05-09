@@ -45,7 +45,7 @@ export default function AdminBlogPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/blog?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());
@@ -55,7 +55,7 @@ export default function AdminBlogPage() {
 
   const handleBulkDraft = async (draft: boolean) => {
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch("/api/admin/blog", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -48,7 +48,7 @@ export default function AdminStudentsPage() {
   const handleBulkDelete = async () => {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch(`/api/admin/students?id=${id}`, { method: "DELETE" });
     }
     setSelected(new Set());
@@ -58,7 +58,7 @@ export default function AdminStudentsPage() {
 
   const handleBulkStatus = async (published: boolean) => {
     const count = selected.size;
-    for (const id of selected) {
+    for (const id of Array.from(selected)) {
       await fetch("/api/admin/students", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -61,11 +61,11 @@ export default function AdminCollaborationsPage() {
     if (!confirm(`Delete ${selected.size} items?`)) return;
     const count = selected.size;
     if (activeTab === "collaborators") {
-      for (const id of selected) {
+      for (const id of Array.from(selected)) {
         await fetch(`/api/admin/collaborations?id=${id}`, { method: "DELETE" });
       }
     } else {
-      for (const id of selected) {
+      for (const id of Array.from(selected)) {
         await fetch(`/api/admin/collaborations?id=${id}&type=resource`, { method: "DELETE" });
       }
     }
@@ -77,7 +77,7 @@ export default function AdminCollaborationsPage() {
   const handleBulkStatus = async (published: boolean) => {
     const count = selected.size;
     if (activeTab === "collaborators") {
-      for (const id of selected) {
+      for (const id of Array.from(selected)) {
         await fetch("/api/admin/collaborations", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -85,7 +85,7 @@ export default function AdminCollaborationsPage() {
         });
       }
     } else {
-      for (const id of selected) {
+      for (const id of Array.from(selected)) {
         await fetch("/api/admin/collaborations?type=resource", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
