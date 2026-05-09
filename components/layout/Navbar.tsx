@@ -175,13 +175,22 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
 
           {/* ── BRAND ── */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            <ProfessorAvatar
-              photoUrl={profile?.photoUrl}
-              alt={profile?.fullName ?? "Professor"}
-              width={40}
-              height={40}
-              className="flex-shrink-0"
-            />
+            <div className="relative group">
+              <button
+                onClick={() => window.location.href = '/login'}
+                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-full"
+                aria-label="Admin access"
+                title="Admin Panel"
+              >
+                <ProfessorAvatar
+                  photoUrl={profile?.photoUrl}
+                  alt={profile?.fullName ?? "Professor"}
+                  width={40}
+                  height={40}
+                  className="flex-shrink-0 cursor-pointer hover:ring-2 hover:ring-primary/50 rounded-full transition-all"
+                />
+              </button>
+            </div>
             <Link
               href="/"
               className="text-navy-900 font-semibold text-base hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded leading-tight"
@@ -251,20 +260,6 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
             {/* Language + Theme */}
             <LanguageSwitcher />
             <ThemeToggle />
-
-            {/* Admin button */}
-            <Link
-              href={adminLink.href}
-              className={[
-                "ml-1 px-3 py-1.5 rounded-md text-sm font-medium border transition-colors whitespace-nowrap",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                isActive(adminLink.href)
-                  ? "border-primary bg-primary text-white"
-                  : "border-primary text-primary hover:bg-primary-light",
-              ].join(" ")}
-            >
-              🔐 Admin
-            </Link>
           </div>
 
           {/* ── MOBILE HAMBURGER ── */}
@@ -385,15 +380,6 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                 {contactLink.label}
               </Link>
             )}
-
-            {/* Admin */}
-            <Link
-              href={adminLink.href}
-              onClick={() => setMobileMenuOpen(false)}
-              className="block px-3 py-2.5 rounded-md text-sm font-medium border border-primary text-primary hover:bg-primary-light transition-colors mt-2"
-            >
-              🔐 Admin Panel
-            </Link>
           </div>
         </div>
       )}
