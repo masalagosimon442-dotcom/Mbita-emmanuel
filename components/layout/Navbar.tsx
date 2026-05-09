@@ -173,7 +173,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
-          {/* ── BRAND ── */}
+          {/* ── BRAND (left on desktop, center on mobile) ── */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="relative group">
               <button
@@ -202,6 +202,28 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                 </span>
               )}
             </Link>
+
+            {/* Hamburger right next to title on mobile */}
+            <div className="lg:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileMenuOpen((p) => !p)}
+                aria-expanded={mobileMenuOpen}
+                aria-controls="mobile-menu"
+                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+                className="p-2 rounded-md text-navy-700 hover:bg-navy-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                {mobileMenuOpen ? (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* ── DESKTOP NAV ── */}
@@ -262,28 +284,10 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
             <ThemeToggle />
           </div>
 
-          {/* ── MOBILE HAMBURGER ── */}
+          {/* ── MOBILE EXTRAS ── */}
           <div className="lg:hidden flex items-center gap-2">
             <LanguageSwitcher />
             <ThemeToggle />
-            <button
-              type="button"
-              onClick={() => setMobileMenuOpen((p) => !p)}
-              aria-expanded={mobileMenuOpen}
-              aria-controls="mobile-menu"
-              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              className="p-2 rounded-md text-navy-700 hover:bg-navy-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              {mobileMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
           </div>
         </div>
       </div>
