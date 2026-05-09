@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -16,7 +16,7 @@ model Profile {
   email            String
   officeLocation   String
   officeHours      String
-  bio              String   @db.Text
+  bio              String
   photoUrl         String   @default("")
   cvUrl            String   @default("")
   // ── Per-location photos (each can be uploaded separately) ──
@@ -28,8 +28,8 @@ model Profile {
   adminPhotoUrl    String   @default("")   // Admin panel sidebar & dropdown
   academicProfiles Json
   // About page enhancements
-  vision           String?  @db.Text
-  mission          String?  @db.Text
+  vision           String?
+  mission          String?
   skills           Json?
   languages        Json?
   education        Json?
@@ -58,7 +58,7 @@ model Publication {
   type        PublicationType
   doi         String?
   url         String?
-  abstract    String?         @db.Text
+  abstract    String?
   pdfUrl      String?
   coverImage  String?
   published   Boolean         @default(true)
@@ -79,7 +79,7 @@ model ResearchProject {
   id             String        @id @default(uuid())
   slug           String        @unique
   title          String
-  description    String        @db.Text
+  description    String
   status         ProjectStatus
   startYear      Int
   endYear        Int?
@@ -110,7 +110,7 @@ model Course {
   status       CourseStatus
   syllabusUrl  String?
   externalUrl  String?
-  description  String?      @db.Text
+  description  String?
   bannerImage  String?
   zoomUrl      String?
   classroomUrl String?
@@ -161,7 +161,7 @@ model Award {
   category      AwardCategory
   amount        String?
   fundingPeriod String?
-  description   String?       @db.Text
+  description   String?
   imageUrl      String?
   published     Boolean       @default(true)
   createdAt     DateTime      @default(now())
@@ -181,8 +181,8 @@ model BlogPost {
   title        String
   slug         String   @unique
   publishedAt  DateTime
-  excerpt      String   @db.VarChar(200)
-  content      String   @db.LongText
+  excerpt      String
+  content      String
   tags         Json?
   featuredImage String?
   draft        Boolean  @default(false)
@@ -201,7 +201,7 @@ model BlogComment {
   postId      String
   name        String
   email       String
-  content     String   @db.Text
+  content     String
   approved    Boolean  @default(false)
   createdAt   DateTime @default(now())
 }
@@ -211,7 +211,7 @@ model Event {
   name             String
   date             DateTime
   location         String
-  description      String   @db.Text
+  description      String
   externalUrl      String?
   posterImage      String?
   registrationUrl  String?
@@ -242,7 +242,7 @@ enum CollaboratorType {
 model Resource {
   id          String   @id @default(uuid())
   title       String
-  description String   @db.VarChar(150)
+  description String
   url         String
   category    String?
   iconUrl     String?
@@ -306,7 +306,7 @@ model ContactMessage {
   id         String   @id @default(uuid())
   name       String
   email      String
-  message    String   @db.Text
+  message    String
   read       Boolean  @default(false)
   receivedAt DateTime @default(now())
 }
@@ -325,7 +325,7 @@ model Testimonial {
   id        String   @id @default(uuid())
   name      String
   role      String
-  content   String   @db.Text
+  content   String
   photoUrl  String?
   published Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -335,7 +335,7 @@ model Testimonial {
 model Announcement {
   id        String   @id @default(uuid())
   title     String
-  content   String   @db.Text
+  content   String
   link      String?
   published Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -348,7 +348,7 @@ model AppointmentRequest {
   email       String
   date        DateTime
   timeSlot    String
-  purpose     String   @db.Text
+  purpose     String
   status      String   @default("pending")
   createdAt   DateTime @default(now())
 }
@@ -361,7 +361,7 @@ model CourseMaterial {
   title       String
   type        String   // lecture_note, video, assignment, quiz, other
   url         String?
-  content     String?  @db.Text
+  content     String?
   order       Int      @default(0)
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -372,7 +372,7 @@ model StudentMilestone {
   id          String   @id @default(uuid())
   studentId   String
   title       String
-  description String?  @db.Text
+  description String?
   dueDate     DateTime?
   completed   Boolean  @default(false)
   completedAt DateTime?
@@ -385,7 +385,7 @@ model CollaborationRequest {
   email       String
   institution String
   area        String
-  message     String   @db.Text
+  message     String
   status      String   @default("pending")
   createdAt   DateTime @default(now())
 }
@@ -401,7 +401,7 @@ model ChatMessage {
   id        String   @id @default(uuid())
   sessionId String
   role      String   // user | assistant
-  content   String   @db.Text
+  content   String
   createdAt DateTime @default(now())
 }
 
@@ -410,7 +410,7 @@ model ChatMessage {
 model ResearchDataset {
   id          String   @id @default(uuid())
   title       String
-  description String   @db.Text
+  description String
   url         String?
   fileUrl     String?
   format      String?  // CSV, JSON, etc.
@@ -427,7 +427,7 @@ model ResearchPresentation {
   date        DateTime
   slideUrl    String?
   videoUrl    String?
-  description String?  @db.Text
+  description String?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -437,7 +437,7 @@ model StudentFeedback {
   id        String   @id @default(uuid())
   courseId  String
   rating    Int      // 1-5
-  comment   String?  @db.Text
+  comment   String?
   anonymous Boolean  @default(true)
   createdAt DateTime @default(now())
 }
@@ -467,7 +467,7 @@ model CourseGrade {
 model AdminNotification {
   id        String   @id @default(uuid())
   title     String
-  message   String   @db.Text
+  message   String
   type      String   @default("info") // info, warning, success, error
   read      Boolean  @default(false)
   link      String?
@@ -505,13 +505,13 @@ model ResourceAnalytics {
 model ResearchProposal {
   id          String   @id @default(uuid())
   title       String
-  description String   @db.Text
+  description String
   status      String   @default("draft") // draft, submitted, approved, rejected
   fundingBody String?
   amount      String?
   deadline    DateTime?
   submittedAt DateTime?
-  notes       String?  @db.Text
+  notes       String?
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -520,7 +520,7 @@ model ResearchProposal {
 model ResearchRepository {
   id          String   @id @default(uuid())
   title       String
-  description String   @db.Text
+  description String
   repoUrl     String?
   demoUrl     String?
   language    String?
@@ -535,7 +535,7 @@ model CourseForum {
   id        String   @id @default(uuid())
   courseId  String
   title     String
-  content   String   @db.Text
+  content   String
   author    String
   pinned    Boolean  @default(false)
   replies   Json?
@@ -558,7 +558,7 @@ model CourseFeedback {
   id        String   @id @default(uuid())
   courseId  String
   rating    Int      // 1-5
-  comment   String?  @db.Text
+  comment   String?
   anonymous Boolean  @default(true)
   createdAt DateTime @default(now())
 }
@@ -569,7 +569,7 @@ model TeamMember {
   role         String
   email        String?
   photoUrl     String?
-  bio          String?  @db.Text
+  bio          String?
   researchArea String?
   joinedYear   Int?
   published    Boolean  @default(true)
