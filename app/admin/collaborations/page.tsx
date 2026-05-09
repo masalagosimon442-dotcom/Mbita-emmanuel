@@ -40,6 +40,63 @@ export default function AdminCollaborationsPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [typeFilter, setTypeFilter] = useState<"all" | "individual" | "institution">("all");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    const currentItems = activeTab === "collaborators" ? collaborators.filter((c) => typeFilter === "all" || c.type === typeFilter) : resources;
+    if (selected.size === currentItems.length) setSelected(new Set());
+    else setSelected(new Set(currentItems.map(i => i.id)));
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Delete ${selected.size} items?`)) return;
+    const count = selected.size;
+    if (activeTab === "collaborators") {
+      for (const id of selected) {
+        await fetch(`/api/admin/collaborations?id=${id}`, { method: "DELETE" });
+      }
+    } else {
+      for (const id of selected) {
+        await fetch(`/api/admin/collaborations?id=${id}&type=resource`, { method: "DELETE" });
+      }
+    }
+    setSelected(new Set());
+    showToast("success", `${count} items deleted.`);
+    loadData();
+  };
+
+  const handleBulkStatus = async (published: boolean) => {
+    const count = selected.size;
+    if (activeTab === "collaborators") {
+      for (const id of selected) {
+        await fetch("/api/admin/collaborations", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, published }),
+        });
+      }
+    } else {
+      for (const id of selected) {
+        await fetch("/api/admin/collaborations?type=resource", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, published }),
+        });
+      }
+    }
+    setSelected(new Set());
+    showToast("success", `${count} items updated.`);
+    loadData();
+  };
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -63,6 +120,9 @@ export default function AdminCollaborationsPage() {
   }
 
   useEffect(() => { loadData(); }, []);
+
+  // Clear selection when tab or filter changes
+  useEffect(() => { setSelected(new Set()); }, [activeTab, typeFilter]);
 
   // Collaborator handlers
   async function handleCollaboratorSubmit(formData: {
@@ -93,7 +153,6 @@ export default function AdminCollaborationsPage() {
   }
 
   async function handleCollaboratorToggle(c: Collaborator) {
-    // Confirm before unpublishing
     if (c.published && !window.confirm(`Unpublish "${c.name}"? They will be hidden from the public site.`)) {
       return;
     }
@@ -138,7 +197,6 @@ export default function AdminCollaborationsPage() {
   }
 
   async function handleResourceToggle(r: Resource) {
-    // Confirm before unpublishing
     if (r.published && !window.confirm(`Unpublish "${r.title}"? It will be hidden from the public site.`)) {
       return;
     }
@@ -212,6 +270,16 @@ export default function AdminCollaborationsPage() {
         ))}
       </div>
 
+      {selected.size > 0 && (
+        <div className="mb-4 p-3 bg-primary-light border border-primary/20 rounded-xl flex items-center gap-3 flex-wrap">
+          <span className="text-sm font-medium text-navy-900">{selected.size} selected</span>
+          <button onClick={() => handleBulkStatus(true)} className="px-3 py-1.5 bg-green-600 text-white text-xs font-medium rounded-lg hover:bg-green-700">Set Published</button>
+          <button onClick={() => handleBulkStatus(false)} className="px-3 py-1.5 bg-gray-600 text-white text-xs font-medium rounded-lg hover:bg-gray-700">Set Hidden</button>
+          <button onClick={handleBulkDelete} className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700">Delete Selected</button>
+          <button onClick={() => setSelected(new Set())} className="px-3 py-1.5 text-navy-600 text-xs font-medium hover:underline">Clear</button>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
       ) : activeTab === "collaborators" ? (
@@ -222,6 +290,9 @@ export default function AdminCollaborationsPage() {
             <table className="w-full text-sm">
               <thead className="bg-navy-50 border-b border-border">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <input type="checkbox" checked={selected.size === filteredCollaborators.length && filteredCollaborators.length > 0} onChange={toggleAll} className="w-4 h-4 rounded border-border" />
+                  </th>
                   <th className="text-left px-4 py-3 font-semibold text-navy-800">Name</th>
                   <th className="text-left px-4 py-3 font-semibold text-navy-800 hidden sm:table-cell">Institution</th>
                   <th className="text-left px-4 py-3 font-semibold text-navy-800 hidden md:table-cell">Type</th>
@@ -232,6 +303,9 @@ export default function AdminCollaborationsPage() {
               <tbody className="divide-y divide-border">
                 {filteredCollaborators.map((c) => (
                   <tr key={c.id} className="hover:bg-navy-50">
+                    <td className="px-4 py-3">
+                      <input type="checkbox" checked={selected.has(c.id)} onChange={() => toggleSelect(c.id)} className="w-4 h-4 rounded border-border" />
+                    </td>
                     <td className="px-4 py-3 font-medium text-navy-900">{c.name}</td>
                     <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{c.institution}</td>
                     <td className="px-4 py-3 hidden md:table-cell">
@@ -262,6 +336,9 @@ export default function AdminCollaborationsPage() {
             <table className="w-full text-sm">
               <thead className="bg-navy-50 border-b border-border">
                 <tr>
+                  <th className="px-4 py-3 w-10">
+                    <input type="checkbox" checked={selected.size === resources.length && resources.length > 0} onChange={toggleAll} className="w-4 h-4 rounded border-border" />
+                  </th>
                   <th className="text-left px-4 py-3 font-semibold text-navy-800">Title</th>
                   <th className="text-left px-4 py-3 font-semibold text-navy-800 hidden md:table-cell">Category</th>
                   <th className="text-left px-4 py-3 font-semibold text-navy-800">Published</th>
@@ -271,6 +348,9 @@ export default function AdminCollaborationsPage() {
               <tbody className="divide-y divide-border">
                 {resources.map((r) => (
                   <tr key={r.id} className="hover:bg-navy-50">
+                    <td className="px-4 py-3">
+                      <input type="checkbox" checked={selected.has(r.id)} onChange={() => toggleSelect(r.id)} className="w-4 h-4 rounded border-border" />
+                    </td>
                     <td className="px-4 py-3 font-medium text-navy-900">{r.title}</td>
                     <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{r.category ?? "—"}</td>
                     <td className="px-4 py-3">

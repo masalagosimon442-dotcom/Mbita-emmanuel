@@ -27,6 +27,32 @@ export default function AdminTeachingPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
   const [statusFilter, setStatusFilter] = useState<"all" | "active" | "archived">("all");
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+
+  const toggleSelect = (id: string) => {
+    setSelected(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAll = () => {
+    if (selected.size === filteredCourses.length) setSelected(new Set());
+    else setSelected(new Set(filteredCourses.map(i => i.id)));
+  };
+
+  const handleBulkDelete = async () => {
+    if (!confirm(`Delete ${selected.size} items?`)) return;
+    const count = selected.size;
+    for (const id of selected) {
+      await fetch(`/api/admin/teaching?id=${id}`, { method: "DELETE" });
+    }
+    setSelected(new Set());
+    showToast("success", `${count} items deleted.`);
+    loadCourses();
+  };
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -46,6 +72,9 @@ export default function AdminTeachingPage() {
   }
 
   useEffect(() => { loadCourses(); }, []);
+
+  // Clear selection when filter changes
+  useEffect(() => { setSelected(new Set()); }, [statusFilter]);
 
   async function handleSubmit(formData: {
     name: string; code: string; term: string; status: "active" | "archived";
@@ -91,7 +120,6 @@ export default function AdminTeachingPage() {
   }
 
   async function handleTogglePublish(course: Course) {
-    // Confirm before unpublishing
     if (course.published && !window.confirm(`Unpublish "${course.name}"? It will be hidden from the public site.`)) {
       return;
     }
@@ -139,6 +167,14 @@ export default function AdminTeachingPage() {
         </div>
       )}
 
+      {selected.size > 0 && (
+        <div className="mb-4 p-3 bg-primary-light border border-primary/20 rounded-xl flex items-center gap-3 flex-wrap">
+          <span className="text-sm font-medium text-navy-900">{selected.size} selected</span>
+          <button onClick={handleBulkDelete} className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded-lg hover:bg-red-700">Delete Selected</button>
+          <button onClick={() => setSelected(new Set())} className="px-3 py-1.5 text-navy-600 text-xs font-medium hover:underline">Clear</button>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
       ) : filteredCourses.length === 0 ? (
@@ -148,6 +184,9 @@ export default function AdminTeachingPage() {
           <table className="w-full text-sm">
             <thead className="bg-navy-50 border-b border-border">
               <tr>
+                <th className="px-4 py-3 w-10">
+                  <input type="checkbox" checked={selected.size === filteredCourses.length && filteredCourses.length > 0} onChange={toggleAll} className="w-4 h-4 rounded border-border" />
+                </th>
                 <th className="text-left px-4 py-3 font-semibold text-navy-800">Name</th>
                 <th className="text-left px-4 py-3 font-semibold text-navy-800 hidden sm:table-cell">Code</th>
                 <th className="text-left px-4 py-3 font-semibold text-navy-800 hidden md:table-cell">Term</th>
@@ -159,6 +198,9 @@ export default function AdminTeachingPage() {
             <tbody className="divide-y divide-border">
               {filteredCourses.map((course) => (
                 <tr key={course.id} className="hover:bg-navy-50">
+                  <td className="px-4 py-3">
+                    <input type="checkbox" checked={selected.has(course.id)} onChange={() => toggleSelect(course.id)} className="w-4 h-4 rounded border-border" />
+                  </td>
                   <td className="px-4 py-3 font-medium text-navy-900">{course.name}</td>
                   <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{course.code}</td>
                   <td className="px-4 py-3 text-gray-600 hidden md:table-cell">{course.term}</td>
