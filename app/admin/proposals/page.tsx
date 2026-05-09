@@ -27,6 +27,7 @@ export default function ProposalsPage() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -81,11 +82,29 @@ export default function ProposalsPage() {
 
   const inputClass = "w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
+  const filteredItems = items.filter((item) => {
+    if (statusFilter !== "all" && item.status !== statusFilter) return false;
+    return true;
+  });
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-navy-900">Research Proposals</h1>
-        <Button variant="primary" onClick={openCreate}>+ Add Proposal</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="draft">Draft</option>
+            <option value="submitted">Submitted</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <Button variant="primary" onClick={openCreate}>+ Add Proposal</Button>
+        </div>
       </div>
 
       {toast && (
@@ -94,11 +113,11 @@ export default function ProposalsPage() {
         </div>
       )}
 
-      {loading ? <p className="text-navy-500">Loading...</p> : items.length === 0 ? (
+      {loading ? <p className="text-navy-500">Loading...</p> : filteredItems.length === 0 ? (
         <p className="text-center text-navy-500 py-12">No proposals yet.</p>
       ) : (
         <div className="space-y-3">
-          {items.map(item => (
+          {filteredItems.map(item => (
             <div key={item.id} className="bg-white border border-border rounded-xl p-5">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1">

@@ -29,6 +29,8 @@ export default function AdminResearchPage() {
   const [editingProject, setEditingProject] = useState<ResearchProject | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "completed">("all");
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "hidden">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -134,6 +136,13 @@ export default function AdminResearchPage() {
     }
   }
 
+  const filteredProjects = projects.filter((project) => {
+    if (statusFilter !== "all" && project.status !== statusFilter) return false;
+    if (publishedFilter === "published" && !project.published) return false;
+    if (publishedFilter === "hidden" && project.published) return false;
+    return true;
+  });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -141,7 +150,27 @@ export default function AdminResearchPage() {
           <h2 className="text-2xl font-bold text-navy-900">Research Projects</h2>
           <p className="text-gray-600 mt-1">Manage your research projects</p>
         </div>
-        <Button variant="primary" onClick={openCreate}>+ New Project</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "completed")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+          <select
+            value={publishedFilter}
+            onChange={(e) => setPublishedFilter(e.target.value as "all" | "published" | "hidden")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All Visibility</option>
+            <option value="published">Published</option>
+            <option value="hidden">Hidden</option>
+          </select>
+          <Button variant="primary" onClick={openCreate}>+ New Project</Button>
+        </div>
       </div>
 
       {toast && (
@@ -155,7 +184,7 @@ export default function AdminResearchPage() {
 
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
-      ) : projects.length === 0 ? (
+      ) : filteredProjects.length === 0 ? (
         <div className="text-center py-12 bg-white border border-border rounded-lg text-gray-500">
           No research projects yet. <button onClick={openCreate} className="text-primary underline">Create one</button>.
         </div>
@@ -172,7 +201,7 @@ export default function AdminResearchPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <tr key={project.id} className="hover:bg-navy-50">
                   <td className="px-4 py-3 font-medium text-navy-900">{project.title}</td>
                   <td className="px-4 py-3 hidden sm:table-cell">

@@ -24,6 +24,8 @@ export default function AdminGalleryPage() {
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "hidden">("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -98,6 +100,13 @@ export default function AdminGalleryPage() {
     } catch { showToast("error", "An unexpected error occurred."); }
   }
 
+  const filteredItems = items.filter((item) => {
+    if (publishedFilter === "published" && !item.published) return false;
+    if (publishedFilter === "hidden" && item.published) return false;
+    if (categoryFilter !== "all" && item.category !== categoryFilter) return false;
+    return true;
+  });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -105,7 +114,28 @@ export default function AdminGalleryPage() {
           <h2 className="text-2xl font-bold text-navy-900">Gallery</h2>
           <p className="text-gray-600 mt-1">Manage gallery images</p>
         </div>
-        <Button variant="primary" onClick={() => { setEditingItem(null); setModalOpen(true); }}>+ Add Image</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={publishedFilter}
+            onChange={(e) => setPublishedFilter(e.target.value as "all" | "published" | "hidden")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All Visibility</option>
+            <option value="published">Published</option>
+            <option value="hidden">Hidden</option>
+          </select>
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All Categories</option>
+            {[...new Set(items.map((i) => i.category))].map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          <Button variant="primary" onClick={() => { setEditingItem(null); setModalOpen(true); }}>+ Add Image</Button>
+        </div>
       </div>
 
       {toast && (
@@ -116,11 +146,11 @@ export default function AdminGalleryPage() {
 
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
-      ) : items.length === 0 ? (
+      ) : filteredItems.length === 0 ? (
         <div className="text-center py-12 bg-white border border-border rounded-lg text-gray-500">No gallery items yet.</div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <div key={item.id} className="bg-white border border-border rounded-lg overflow-hidden">
               <div className="relative w-full h-40 bg-navy-100">
                 <Image

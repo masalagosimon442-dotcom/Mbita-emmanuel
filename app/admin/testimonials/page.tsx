@@ -32,6 +32,7 @@ export default function TestimonialsAdminPage() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "hidden">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -86,11 +87,28 @@ export default function TestimonialsAdminPage() {
 
   const inputClass = "w-full px-3 py-2 border border-border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
+  const filteredItems = items.filter((item) => {
+    if (publishedFilter === "published") return item.published;
+    if (publishedFilter === "hidden") return !item.published;
+    return true;
+  });
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-navy-900">Testimonials</h1>
-        <Button variant="primary" onClick={openCreate}>+ Add Testimonial</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={publishedFilter}
+            onChange={(e) => setPublishedFilter(e.target.value as "all" | "published" | "hidden")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="hidden">Hidden</option>
+          </select>
+          <Button variant="primary" onClick={openCreate}>+ Add Testimonial</Button>
+        </div>
       </div>
 
       {toast && (
@@ -101,11 +119,11 @@ export default function TestimonialsAdminPage() {
 
       {loading ? (
         <p className="text-navy-500">Loading...</p>
-      ) : items.length === 0 ? (
+      ) : filteredItems.length === 0 ? (
         <p className="text-navy-500 text-center py-12">No testimonials yet.</p>
       ) : (
         <div className="space-y-3">
-          {items.map((item) => (
+          {filteredItems.map((item) => (
             <div key={item.id} className="flex items-start justify-between gap-4 p-4 bg-white border border-border rounded-xl">
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-navy-900">{item.name}</p>

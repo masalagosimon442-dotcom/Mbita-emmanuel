@@ -22,6 +22,7 @@ export default function TeamPage() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "hidden">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -76,11 +77,28 @@ export default function TeamPage() {
 
   const inputClass = "w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
+  const filteredItems = items.filter((item) => {
+    if (publishedFilter === "published") return item.published;
+    if (publishedFilter === "hidden") return !item.published;
+    return true;
+  });
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-navy-900">Research Team</h1>
-        <Button variant="primary" onClick={openCreate}>+ Add Member</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={publishedFilter}
+            onChange={(e) => setPublishedFilter(e.target.value as "all" | "published" | "hidden")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="hidden">Hidden</option>
+          </select>
+          <Button variant="primary" onClick={openCreate}>+ Add Member</Button>
+        </div>
       </div>
 
       {toast && (
@@ -89,11 +107,11 @@ export default function TeamPage() {
         </div>
       )}
 
-      {loading ? <p className="text-navy-500">Loading...</p> : items.length === 0 ? (
+      {loading ? <p className="text-navy-500">Loading...</p> : filteredItems.length === 0 ? (
         <p className="text-center text-navy-500 py-12">No team members yet.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map(item => (
+          {filteredItems.map(item => (
             <div key={item.id} className="bg-white border border-border rounded-xl p-5 text-center">
               {item.photoUrl ? (
                 <Image src={item.photoUrl} alt={item.name} width={64} height={64} className="w-16 h-16 rounded-full object-cover mx-auto mb-3 border-2 border-border" />

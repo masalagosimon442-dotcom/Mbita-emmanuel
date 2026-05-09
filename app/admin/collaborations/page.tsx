@@ -39,6 +39,7 @@ export default function AdminCollaborationsPage() {
   const [editingResource, setEditingResource] = useState<Resource | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [typeFilter, setTypeFilter] = useState<"all" | "individual" | "institution">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -157,6 +158,11 @@ export default function AdminCollaborationsPage() {
     ["px-2 py-0.5 rounded-full text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
       published ? "bg-blue-100 text-blue-700 hover:bg-blue-200" : "bg-gray-100 text-gray-500 hover:bg-gray-200"].join(" ");
 
+  const filteredCollaborators = collaborators.filter((c) => {
+    if (typeFilter !== "all" && c.type !== typeFilter) return false;
+    return true;
+  });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -164,13 +170,26 @@ export default function AdminCollaborationsPage() {
           <h2 className="text-2xl font-bold text-navy-900">Collaborations & Resources</h2>
           <p className="text-gray-600 mt-1">Manage collaborators and shared resources</p>
         </div>
-        <Button variant="primary" onClick={() => {
-          if (activeTab === "collaborators") { setEditingCollaborator(null); }
-          else { setEditingResource(null); }
-          setModalOpen(true);
-        }}>
-          + {activeTab === "collaborators" ? "Add Collaborator" : "Add Resource"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {activeTab === "collaborators" && (
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value as "all" | "individual" | "institution")}
+              className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option value="all">All Types</option>
+              <option value="individual">Individual</option>
+              <option value="institution">Institution</option>
+            </select>
+          )}
+          <Button variant="primary" onClick={() => {
+            if (activeTab === "collaborators") { setEditingCollaborator(null); }
+            else { setEditingResource(null); }
+            setModalOpen(true);
+          }}>
+            + {activeTab === "collaborators" ? "Add Collaborator" : "Add Resource"}
+          </Button>
+        </div>
       </div>
 
       {toast && (
@@ -196,7 +215,7 @@ export default function AdminCollaborationsPage() {
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
       ) : activeTab === "collaborators" ? (
-        collaborators.length === 0 ? (
+        filteredCollaborators.length === 0 ? (
           <div className="text-center py-12 bg-white border border-border rounded-lg text-gray-500">No collaborators yet.</div>
         ) : (
           <div className="bg-white border border-border rounded-lg overflow-hidden">
@@ -211,7 +230,7 @@ export default function AdminCollaborationsPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {collaborators.map((c) => (
+                {filteredCollaborators.map((c) => (
                   <tr key={c.id} className="hover:bg-navy-50">
                     <td className="px-4 py-3 font-medium text-navy-900">{c.name}</td>
                     <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{c.institution}</td>

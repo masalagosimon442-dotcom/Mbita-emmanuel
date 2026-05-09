@@ -25,6 +25,7 @@ export default function AdminBlogPage() {
   const [editingPost, setEditingPost] = useState<BlogPost | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [draftFilter, setDraftFilter] = useState<"all" | "published" | "draft">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -103,6 +104,12 @@ export default function AdminBlogPage() {
     return new Date(dateStr).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
   }
 
+  const filteredPosts = posts.filter((post) => {
+    if (draftFilter === "published") return !post.draft;
+    if (draftFilter === "draft") return post.draft;
+    return true;
+  });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -110,7 +117,18 @@ export default function AdminBlogPage() {
           <h2 className="text-2xl font-bold text-navy-900">Blog Posts</h2>
           <p className="text-gray-600 mt-1">Manage your blog posts and news</p>
         </div>
-        <Button variant="primary" onClick={() => { setEditingPost(null); setModalOpen(true); }}>+ New Post</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={draftFilter}
+            onChange={(e) => setDraftFilter(e.target.value as "all" | "published" | "draft")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+          <Button variant="primary" onClick={() => { setEditingPost(null); setModalOpen(true); }}>+ New Post</Button>
+        </div>
       </div>
 
       {toast && (
@@ -121,7 +139,7 @@ export default function AdminBlogPage() {
 
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
-      ) : posts.length === 0 ? (
+      ) : filteredPosts.length === 0 ? (
         <div className="text-center py-12 bg-white border border-border rounded-lg text-gray-500">No blog posts yet.</div>
       ) : (
         <div className="bg-white border border-border rounded-lg overflow-hidden">
@@ -135,7 +153,7 @@ export default function AdminBlogPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {posts.map((post) => (
+              {filteredPosts.map((post) => (
                 <tr key={post.id} className="hover:bg-navy-50">
                   <td className="px-4 py-3 font-medium text-navy-900 max-w-xs truncate">{post.title}</td>
                   <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{formatDate(post.publishedAt)}</td>

@@ -26,6 +26,7 @@ export default function AdminTeachingPage() {
   const [editingCourse, setEditingCourse] = useState<Course | null>(null);
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "archived">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -106,6 +107,11 @@ export default function AdminTeachingPage() {
     } catch { showToast("error", "An unexpected error occurred."); }
   }
 
+  const filteredCourses = courses.filter((course) => {
+    if (statusFilter !== "all" && course.status !== statusFilter) return false;
+    return true;
+  });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -113,7 +119,18 @@ export default function AdminTeachingPage() {
           <h2 className="text-2xl font-bold text-navy-900">Teaching & Courses</h2>
           <p className="text-gray-600 mt-1">Manage your courses</p>
         </div>
-        <Button variant="primary" onClick={() => { setEditingCourse(null); setModalOpen(true); }}>+ New Course</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as "all" | "active" | "archived")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="archived">Archived</option>
+          </select>
+          <Button variant="primary" onClick={() => { setEditingCourse(null); setModalOpen(true); }}>+ New Course</Button>
+        </div>
       </div>
 
       {toast && (
@@ -124,7 +141,7 @@ export default function AdminTeachingPage() {
 
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
-      ) : courses.length === 0 ? (
+      ) : filteredCourses.length === 0 ? (
         <div className="text-center py-12 bg-white border border-border rounded-lg text-gray-500">No courses yet.</div>
       ) : (
         <div className="bg-white border border-border rounded-lg overflow-hidden">
@@ -140,7 +157,7 @@ export default function AdminTeachingPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {courses.map((course) => (
+              {filteredCourses.map((course) => (
                 <tr key={course.id} className="hover:bg-navy-50">
                   <td className="px-4 py-3 font-medium text-navy-900">{course.name}</td>
                   <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{course.code}</td>

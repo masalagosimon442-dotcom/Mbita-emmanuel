@@ -20,6 +20,7 @@ export default function DatasetsPage() {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "hidden">("all");
 
   function showToast(type: "success" | "error", message: string) {
     setToast({ type, message });
@@ -74,11 +75,28 @@ export default function DatasetsPage() {
 
   const inputClass = "w-full px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary";
 
+  const filteredItems = items.filter((item) => {
+    if (publishedFilter === "published") return item.published;
+    if (publishedFilter === "hidden") return !item.published;
+    return true;
+  });
+
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-navy-900">Research Datasets</h1>
-        <Button variant="primary" onClick={openCreate}>+ Add Dataset</Button>
+        <div className="flex items-center gap-2">
+          <select
+            value={publishedFilter}
+            onChange={(e) => setPublishedFilter(e.target.value as "all" | "published" | "hidden")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="hidden">Hidden</option>
+          </select>
+          <Button variant="primary" onClick={openCreate}>+ Add Dataset</Button>
+        </div>
       </div>
 
       {toast && (
@@ -87,11 +105,11 @@ export default function DatasetsPage() {
         </div>
       )}
 
-      {loading ? <p className="text-navy-500">Loading...</p> : items.length === 0 ? (
+      {loading ? <p className="text-navy-500">Loading...</p> : filteredItems.length === 0 ? (
         <p className="text-center text-navy-500 py-12">No datasets yet.</p>
       ) : (
         <div className="space-y-3">
-          {items.map(item => (
+          {filteredItems.map(item => (
             <div key={item.id} className="bg-white border border-border rounded-xl p-5 flex items-start justify-between gap-4">
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">

@@ -37,6 +37,7 @@ export default function AdminPublicationsPage() {
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [toast, setToast] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [publishedFilter, setPublishedFilter] = useState<"all" | "published" | "hidden">("all");
 
   async function handleORCIDSync() {
     setSyncing(true);
@@ -149,6 +150,12 @@ export default function AdminPublicationsPage() {
     }
   }
 
+  const filteredPublications = publications.filter((pub) => {
+    if (publishedFilter === "published") return pub.published;
+    if (publishedFilter === "hidden") return !pub.published;
+    return true;
+  });
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -157,6 +164,15 @@ export default function AdminPublicationsPage() {
           <p className="text-gray-600 mt-1">Manage your publications</p>
         </div>
         <div className="flex items-center gap-2">
+          <select
+            value={publishedFilter}
+            onChange={(e) => setPublishedFilter(e.target.value as "all" | "published" | "hidden")}
+            className="px-3 py-2 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="hidden">Hidden</option>
+          </select>
           <Button
             variant="ghost"
             onClick={handleORCIDSync}
@@ -182,7 +198,7 @@ export default function AdminPublicationsPage() {
 
       {loading ? (
         <div className="text-center py-12 text-gray-500">Loading…</div>
-      ) : publications.length === 0 ? (
+      ) : filteredPublications.length === 0 ? (
         <div className="text-center py-12 bg-white border border-border rounded-lg text-gray-500">
           No publications yet.
         </div>
@@ -199,7 +215,7 @@ export default function AdminPublicationsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
-              {publications.map((pub) => (
+              {filteredPublications.map((pub) => (
                 <tr key={pub.id} className="hover:bg-navy-50">
                   <td className="px-4 py-3 font-medium text-navy-900 max-w-xs truncate">{pub.title}</td>
                   <td className="px-4 py-3 text-gray-600 hidden sm:table-cell">{pub.year}</td>
