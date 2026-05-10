@@ -16,7 +16,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: {
     default: "Mbita Deogratias",
-    template: "%s | Mbita Deogratias",
+    template: "Mbita Deogratias | %s",
   },
   description: "Academic personal website",
 };
