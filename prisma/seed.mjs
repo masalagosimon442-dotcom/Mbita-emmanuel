@@ -48,6 +48,8 @@ async function main() {
       department: 'Department of Mathematics and Statistics',
       institution: 'Sokoine University of Agriculture (SUA)',
       email: 'mbita.deogratias@sua.ac.tz',
+      officeLocation: 'Old Library, Mazimbu, SUA Solomon Mahlangu Campus',
+      mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.123!2d37.6584!3d-6.8441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4b0a0a0a0a0a%3A0x0!2sSolomon+Mahlangu+Campus+SUA!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz',
       bio: `Dr. Mbita Deogratias is a Lecturer of Mathematics at Sokoine University of Agriculture (SUA), where he has been a faculty member dedicated to advancing mathematical sciences. His research focuses on mathematical modelling, numerical analysis, and applied mathematics.\n\nHe holds a Ph.D. in Mathematics and has published numerous peer-reviewed papers in reputable journals. His work contributes to solving real-world problems through mathematical approaches in areas such as epidemiology, ecology, and agricultural systems.\n\nDr. Mbita is passionate about teaching and mentoring students, guiding them through both undergraduate and postgraduate research in mathematics.`,
       academicProfiles: [
         { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=example' },
@@ -68,11 +70,12 @@ async function main() {
       department: 'Department of Mathematics and Statistics',
       institution: 'Sokoine University of Agriculture (SUA)',
       email: 'mbita.deogratias@sua.ac.tz',
-      officeLocation: 'Mathematics Building, Room 205',
+      officeLocation: 'Old Library, Mazimbu, SUA Solomon Mahlangu Campus',
       officeHours: 'Monday & Thursday, 10:00 AM – 12:00 PM',
       bio: `Dr. Mbita Deogratias is a Lecturer of Mathematics at Sokoine University of Agriculture (SUA), where he has been a faculty member dedicated to advancing mathematical sciences. His research focuses on mathematical modelling, numerical analysis, and applied mathematics.\n\nHe holds a Ph.D. in Mathematics and has published numerous peer-reviewed papers in reputable journals. His work contributes to solving real-world problems through mathematical approaches in areas such as epidemiology, ecology, and agricultural systems.\n\nDr. Mbita is passionate about teaching and mentoring students, guiding them through both undergraduate and postgraduate research in mathematics.`,
       photoUrl: '',
       cvUrl: '',
+      mapEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3961.123!2d37.6584!3d-6.8441!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x185c4b0a0a0a0a0a%3A0x0!2sSolomon+Mahlangu+Campus+SUA!5e0!3m2!1sen!2stz!4v1700000000000!5m2!1sen!2stz',
       academicProfiles: [
         { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=example' },
         { label: 'ORCID', url: 'https://orcid.org/0000-0000-0000-0000' },
