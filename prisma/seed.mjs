@@ -43,6 +43,11 @@ async function main() {
   await prisma.profile.upsert({
     where: { id: 1 },
     update: {
+      fullName: 'Dr. Emmanuel Deogratias Mbita',
+      title: 'Senior Lecturer of Mathematics',
+      department: 'Department of Mathematics and Statistics',
+      institution: 'Sokoine University of Agriculture (SUA)',
+      email: 'emmanuel.mbita@sua.ac.tz',
       academicProfiles: [
         { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=JEeMxH0AAAAJ' },
         { label: 'ResearchGate', url: 'https://www.researchgate.net/profile/Emmanuel-Deogratias' },
@@ -51,11 +56,11 @@ async function main() {
     },
     create: {
       id: 1,
-      fullName: '',
-      title: '',
-      department: '',
-      institution: '',
-      email: '',
+      fullName: 'Dr. Emmanuel Deogratias Mbita',
+      title: 'Senior Lecturer of Mathematics',
+      department: 'Department of Mathematics and Statistics',
+      institution: 'Sokoine University of Agriculture (SUA)',
+      email: 'emmanuel.mbita@sua.ac.tz',
       officeLocation: '',
       officeHours: '',
       bio: '',
@@ -73,13 +78,18 @@ async function main() {
   // Empty SiteSettings — admin will fill via panel
   await prisma.siteSettings.upsert({
     where: { id: 1 },
-    update: {},
+    update: {
+      siteTitle: 'Dr. Emmanuel Deogratias Mbita',
+      tagline: 'Senior Lecturer of Mathematics | Sokoine University of Agriculture',
+      footerText: '© 2025 Dr. Emmanuel Deogratias Mbita',
+      contactEmail: 'emmanuel.mbita@sua.ac.tz',
+    },
     create: {
       id: 1,
-      siteTitle: 'Mbita Deogratias',
-      tagline: '',
-      footerText: '',
-      contactEmail: '',
+      siteTitle: 'Dr. Emmanuel Deogratias Mbita',
+      tagline: 'Senior Lecturer of Mathematics | Sokoine University of Agriculture',
+      footerText: '© 2025 Dr. Emmanuel Deogratias Mbita',
+      contactEmail: 'emmanuel.mbita@sua.ac.tz',
       maintenanceMode: false,
       socialLinks: [],
       hiddenSections: [],
