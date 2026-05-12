@@ -42,7 +42,13 @@ async function main() {
   // Empty Profile — admin will fill via panel
   await prisma.profile.upsert({
     where: { id: 1 },
-    update: {},
+    update: {
+      academicProfiles: [
+        { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=JEeMxH0AAAAJ' },
+        { label: 'ResearchGate', url: 'https://www.researchgate.net/profile/Emmanuel-Deogratias' },
+        { label: 'LinkedIn', url: 'https://www.linkedin.com/in/emmanuel-deogratias-mbita' },
+      ],
+    },
     create: {
       id: 1,
       fullName: '',
@@ -55,7 +61,11 @@ async function main() {
       bio: '',
       photoUrl: '',
       cvUrl: '',
-      academicProfiles: [],
+      academicProfiles: [
+        { label: 'Google Scholar', url: 'https://scholar.google.com/citations?user=JEeMxH0AAAAJ' },
+        { label: 'ResearchGate', url: 'https://www.researchgate.net/profile/Emmanuel-Deogratias' },
+        { label: 'LinkedIn', url: 'https://www.linkedin.com/in/emmanuel-deogratias-mbita' },
+      ],
     },
   });
   console.log('✓ Empty Profile created');
