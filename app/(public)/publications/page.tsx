@@ -1,30 +1,39 @@
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import PublicationsClient from "@/components/sections/PublicationsClient";
 import Link from "next/link";
 
 export const revalidate = 60;
 
-async function getPublications() {
-  try {
-    return await prisma.publication.findMany({
-      where: { published: true },
-      orderBy: { year: "desc" },
-    });
-  } catch {
-    return [];
-  }
-}
+const getPublications = unstable_cache(
+  async () => {
+    try {
+      return await prisma.publication.findMany({
+        where: { published: true },
+        orderBy: { year: "desc" },
+      });
+    } catch {
+      return [];
+    }
+  },
+  ["publications-list"],
+  { revalidate: 60, tags: ["publications"] }
+);
 
-async function getProfile() {
-  try {
-    return await prisma.profile.findFirst({
-      select: { academicProfiles: true, fullName: true },
-    });
-  } catch {
-    return null;
-  }
-}
+const getProfile = unstable_cache(
+  async () => {
+    try {
+      return await prisma.profile.findFirst({
+        select: { academicProfiles: true, fullName: true },
+      });
+    } catch {
+      return null;
+    }
+  },
+  ["publications-profile"],
+  { revalidate: 60, tags: ["profile"] }
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   return {

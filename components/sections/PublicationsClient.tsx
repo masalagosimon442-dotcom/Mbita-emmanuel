@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import PublicationCard from "@/components/sections/PublicationCard";
 
 interface Publication {
@@ -44,6 +44,7 @@ const TYPE_COLORS: Record<string, string> = {
 
 export default function PublicationsClient({ publications }: PublicationsClientProps) {
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedType, setSelectedType] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedAuthor, setSelectedAuthor] = useState("");
@@ -51,6 +52,14 @@ export default function PublicationsClient({ publications }: PublicationsClientP
   const [sortBy, setSortBy] = useState<"year_desc" | "year_asc" | "title_asc" | "title_desc">("year_desc");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
   const [showFilters, setShowFilters] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounce search input — only filter after user stops typing for 200ms
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(search), 200);
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current); };
+  }, [search]);
 
   // Derive unique filter options from data
   const years = useMemo(() =>
@@ -71,14 +80,14 @@ export default function PublicationsClient({ publications }: PublicationsClientP
     [publications]
   );
 
-  const activeFilterCount = [selectedType, selectedYear, selectedAuthor, selectedVenue, search]
+  const activeFilterCount = [selectedType, selectedYear, selectedAuthor, selectedVenue, debouncedSearch]
     .filter(Boolean).length;
 
   const filtered = useMemo(() => {
     let result = publications;
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase();
       result = result.filter((p) =>
         p.title.toLowerCase().includes(q) ||
         (Array.isArray(p.authors) && (p.authors as string[]).some((a) => a.toLowerCase().includes(q))) ||
@@ -102,10 +111,10 @@ export default function PublicationsClient({ publications }: PublicationsClientP
         default: return b.year - a.year;
       }
     });
-  }, [publications, search, selectedType, selectedYear, selectedAuthor, selectedVenue, sortBy]);
+  }, [publications, debouncedSearch, selectedType, selectedYear, selectedAuthor, selectedVenue, sortBy]);
 
   function clearAll() {
-    setSearch(""); setSelectedType(""); setSelectedYear("");
+    setSearch(""); setDebouncedSearch(""); setSelectedType(""); setSelectedYear("");
     setSelectedAuthor(""); setSelectedVenue("");
   }
 

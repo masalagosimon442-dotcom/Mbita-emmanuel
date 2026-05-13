@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
 import ProfessorAvatar from "@/components/ui/ProfessorAvatar";
 import StatsCounter from "@/components/sections/StatsCounter";
 import NewsSlider from "@/components/sections/NewsSlider";
@@ -16,63 +17,67 @@ interface AcademicProfile {
 
 export const revalidate = 60;
 
-async function getHomeData() {
-  try {
-    const [profile, settings, recentPosts, upcomingEvents, recentPubs, testimonials, announcements, stats, researchHighlights, achievements] =
-      await Promise.all([
-        prisma.profile.findFirst(),
-        prisma.siteSettings.findFirst(),
-        prisma.blogPost.findMany({
-          where: { draft: false },
-          orderBy: { publishedAt: "desc" },
-          take: 5,
-          select: { id: true, title: true, slug: true, publishedAt: true, excerpt: true, featuredImage: true },
-        }),
-        prisma.event.findMany({
-          where: { published: true, date: { gte: new Date() } },
-          orderBy: { date: "asc" },
-          take: 3,
-        }),
-        prisma.publication.findMany({
-          where: { published: true },
-          orderBy: { year: "desc" },
-          take: 4,
-          select: { id: true, title: true, authors: true, venue: true, year: true, type: true, coverImage: true, doi: true, url: true },
-        }),
-        prisma.testimonial.findMany({
-          where: { published: true },
-          take: 6,
-        }),
-        prisma.announcement.findMany({
-          where: { published: true },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        }),
-        Promise.all([
-          prisma.publication.count({ where: { published: true } }),
-          prisma.researchProject.count({ where: { published: true } }),
-          prisma.student.count({ where: { published: true } }),
-          prisma.course.count({ where: { published: true } }),
-        ]),
-        prisma.researchProject.findMany({
-          where: { published: true, status: "active" },
-          orderBy: { startYear: "desc" },
-          take: 3,
-          select: { id: true, slug: true, title: true, description: true, status: true, imageUrl: true, tags: true },
-        }),
-        prisma.award.findMany({
-          where: { published: true },
-          orderBy: { year: "desc" },
-          take: 4,
-          select: { id: true, name: true, organization: true, year: true, category: true, imageUrl: true },
-        }),
-      ]);
+const getHomeData = unstable_cache(
+  async () => {
+    try {
+      const [profile, settings, recentPosts, upcomingEvents, recentPubs, testimonials, announcements, stats, researchHighlights, achievements] =
+        await Promise.all([
+          prisma.profile.findFirst(),
+          prisma.siteSettings.findFirst(),
+          prisma.blogPost.findMany({
+            where: { draft: false },
+            orderBy: { publishedAt: "desc" },
+            take: 5,
+            select: { id: true, title: true, slug: true, publishedAt: true, excerpt: true, featuredImage: true },
+          }),
+          prisma.event.findMany({
+            where: { published: true, date: { gte: new Date() } },
+            orderBy: { date: "asc" },
+            take: 3,
+          }),
+          prisma.publication.findMany({
+            where: { published: true },
+            orderBy: { year: "desc" },
+            take: 4,
+            select: { id: true, title: true, authors: true, venue: true, year: true, type: true, coverImage: true, doi: true, url: true },
+          }),
+          prisma.testimonial.findMany({
+            where: { published: true },
+            take: 6,
+          }),
+          prisma.announcement.findMany({
+            where: { published: true },
+            orderBy: { createdAt: "desc" },
+            take: 5,
+          }),
+          Promise.all([
+            prisma.publication.count({ where: { published: true } }),
+            prisma.researchProject.count({ where: { published: true } }),
+            prisma.student.count({ where: { published: true } }),
+            prisma.course.count({ where: { published: true } }),
+          ]),
+          prisma.researchProject.findMany({
+            where: { published: true, status: "active" },
+            orderBy: { startYear: "desc" },
+            take: 3,
+            select: { id: true, slug: true, title: true, description: true, status: true, imageUrl: true, tags: true },
+          }),
+          prisma.award.findMany({
+            where: { published: true },
+            orderBy: { year: "desc" },
+            take: 4,
+            select: { id: true, name: true, organization: true, year: true, category: true, imageUrl: true },
+          }),
+        ]);
 
-    return { profile, settings, recentPosts, upcomingEvents, recentPubs, testimonials, announcements, stats, researchHighlights, achievements };
-  } catch {
-    return { profile: null, settings: null, recentPosts: [], upcomingEvents: [], recentPubs: [], testimonials: [], announcements: [], stats: [0, 0, 0, 0], researchHighlights: [], achievements: [] };
-  }
-}
+      return { profile, settings, recentPosts, upcomingEvents, recentPubs, testimonials, announcements, stats, researchHighlights, achievements };
+    } catch {
+      return { profile: null, settings: null, recentPosts: [], upcomingEvents: [], recentPubs: [], testimonials: [], announcements: [], stats: [0, 0, 0, 0], researchHighlights: [], achievements: [] };
+    }
+  },
+  ["home-data"],
+  { revalidate: 60, tags: ["home", "profile", "settings"] }
+);
 
 export async function generateMetadata(): Promise<Metadata> {
   const { profile } = await getHomeData();

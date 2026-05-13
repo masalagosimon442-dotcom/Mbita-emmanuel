@@ -1,26 +1,51 @@
 import { prisma } from "@/lib/prisma";
+import { unstable_cache } from "next/cache";
+import dynamic from "next/dynamic";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import AIChatbot from "@/components/sections/AIChatbot";
 import { getPhotoForSlot } from "@/lib/profilePhotos";
 
-export const dynamic = "force-dynamic";
+// Lazy-load the chatbot — it's not needed for initial render
+const AIChatbot = dynamic(() => import("@/components/sections/AIChatbot"), {
+  ssr: false,
+});
 
-async function getProfile() {
-  try {
-    return await prisma.profile.findFirst();
-  } catch {
-    return null;
-  }
-}
+// Cache layout data for 60 seconds — avoids a DB hit on every page load
+const getProfile = unstable_cache(
+  async () => {
+    try {
+      return await prisma.profile.findFirst({
+        select: {
+          fullName: true,
+          title: true,
+          email: true,
+          photoUrl: true,
+          navbarPhotoUrl: true,
+          footerPhotoUrl: true,
+          cvUrl: true,
+        },
+      });
+    } catch {
+      return null;
+    }
+  },
+  ["layout-profile"],
+  { revalidate: 60, tags: ["profile"] }
+);
 
-async function getSiteSettings() {
-  try {
-    return await prisma.siteSettings.findFirst();
-  } catch {
-    return null;
-  }
-}
+const getSiteSettings = unstable_cache(
+  async () => {
+    try {
+      return await prisma.siteSettings.findFirst({
+        select: { hiddenSections: true, maintenanceMode: true },
+      });
+    } catch {
+      return null;
+    }
+  },
+  ["layout-settings"],
+  { revalidate: 60, tags: ["settings"] }
+);
 
 export default async function PublicLayout({
   children,
