@@ -232,7 +232,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-slate-900">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
@@ -362,7 +362,7 @@ export default function AdminLayout({
       {/* ── MAIN CONTENT ── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Top header */}
-        <header className="bg-white border-b border-border px-4 sm:px-6 h-16 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+        <header className="bg-white dark:bg-navy-900 border-b border-border dark:border-navy-800 px-4 sm:px-6 h-16 flex items-center justify-between sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-3">
             {/* Mobile hamburger */}
             <button
@@ -382,7 +382,7 @@ export default function AdminLayout({
               <svg className="w-3.5 h-3.5 text-navy-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-              <span className="font-semibold text-navy-900 capitalize">
+              <span className="font-semibold text-navy-900 dark:text-gray-100 capitalize">
                 {pathname.split("/").pop()?.replace(/-/g, " ") || "Dashboard"}
               </span>
             </div>

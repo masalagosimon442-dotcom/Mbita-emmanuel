@@ -22,7 +22,7 @@ export default function ThemeToggle() {
     localStorage.setItem("theme", next ? "dark" : "light");
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <div className="w-9 h-9" />; // placeholder to prevent layout shift
 
   return (
     <button

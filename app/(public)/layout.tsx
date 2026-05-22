@@ -81,7 +81,7 @@ export default async function PublicLayout({
 
       <Navbar profile={navbarProfile} hiddenSections={hiddenSections} />
 
-      <main id="main-content" className="flex-1">
+      <main id="main-content" className="flex-1 dark:bg-slate-900">
         {children}
       </main>
 

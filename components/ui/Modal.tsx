@@ -31,16 +31,24 @@ export default function Modal({
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!isOpen) return;
 
-    // Focus the close button when modal opens
-    closeButtonRef.current?.focus();
+    // Focus close button only if nothing inside the modal is already focused
+    const timer = setTimeout(() => {
+      const active = document.activeElement;
+      const isInsideModal = dialogRef.current?.contains(active);
+      if (!isInsideModal) {
+        closeButtonRef.current?.focus();
+      }
+    }, 50);
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -73,17 +81,18 @@ export default function Modal({
     document.body.style.overflow = "hidden";
 
     return () => {
+      clearTimeout(timer);
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "unset";
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]); // Only depend on isOpen — onClose is accessed via ref
 
   if (!isOpen) return null;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
-      onClick={onClose}
+      onClick={() => onCloseRef.current()}
       aria-hidden="true"
     >
       <div
@@ -95,7 +104,7 @@ export default function Modal({
           "relative w-full bg-white rounded-lg shadow-xl",
           sizeClasses[size],
         ].join(" ")}
-        onClickCapture={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-border">
@@ -107,7 +116,7 @@ export default function Modal({
           </h2>
           <button
             ref={closeButtonRef}
-            onClick={onClose}
+            onClick={() => onCloseRef.current()}
             className="text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md p-1"
             aria-label="Close modal"
           >

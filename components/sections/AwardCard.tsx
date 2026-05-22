@@ -41,7 +41,7 @@ export default function AwardCard({
   imageUrl,
 }: AwardCardProps) {
   return (
-    <article className="bg-white border border-border rounded-xl overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
+    <article className="bg-white dark:bg-navy-800 border border-border dark:border-navy-700 rounded-xl overflow-hidden hover:shadow-md transition-shadow flex flex-col h-full">
       {/* Award image */}
       {imageUrl ? (
         <Image
@@ -52,25 +52,25 @@ export default function AwardCard({
           className="w-full h-36 object-cover"
         />
       ) : (
-        <div className="w-full h-20 bg-gradient-to-br from-primary-light to-navy-100 flex items-center justify-center">
+        <div className="w-full h-20 bg-gradient-to-br from-primary-light to-navy-100 dark:from-navy-700 dark:to-navy-800 flex items-center justify-center">
           <span className="text-3xl" aria-hidden="true">{categoryIcons[category]}</span>
         </div>
       )}
 
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-3">
-          <h3 className="font-semibold text-navy-900 leading-snug">{name}</h3>
+          <h3 className="font-semibold text-navy-900 dark:text-gray-100 leading-snug">{name}</h3>
           <Badge variant={categoryVariants[category]} className="flex-shrink-0 capitalize">
             {category}
           </Badge>
         </div>
 
         <div className="space-y-1 flex-1">
-          <p className="text-sm text-navy-700 font-medium">{organization}</p>
-          <p className="text-sm text-navy-500">{year}</p>
-          {amount && <p className="text-sm text-navy-600">Amount: {amount}</p>}
-          {fundingPeriod && <p className="text-sm text-navy-600">Period: {fundingPeriod}</p>}
-          {description && <p className="text-sm text-navy-600 mt-2 leading-relaxed">{description}</p>}
+          <p className="text-sm text-navy-700 dark:text-gray-300 font-medium">{organization}</p>
+          <p className="text-sm text-navy-500 dark:text-navy-300">{year}</p>
+          {amount && <p className="text-sm text-navy-600 dark:text-navy-300">Amount: {amount}</p>}
+          {fundingPeriod && <p className="text-sm text-navy-600 dark:text-navy-300">Period: {fundingPeriod}</p>}
+          {description && <p className="text-sm text-navy-600 dark:text-navy-300 mt-2 leading-relaxed">{description}</p>}
         </div>
       </div>
     </article>

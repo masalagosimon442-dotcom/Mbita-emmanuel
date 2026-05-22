@@ -101,8 +101,8 @@ function DropdownMenu({ label, icon, items, isGroupActive, hiddenSections, onClo
           "flex items-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-colors",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
           isGroupActive
-            ? "bg-primary-light text-primary font-semibold"
-            : "text-navy-700 hover:bg-navy-50 hover:text-navy-900",
+            ? "bg-primary-light dark:bg-navy-800 text-primary dark:text-navy-100 font-semibold"
+            : "text-navy-700 dark:text-gray-200 hover:bg-navy-50 dark:hover:bg-navy-800 hover:text-navy-900 dark:hover:text-white",
         ].join(" ")}
       >
         <span aria-hidden="true" className="text-base">{icon}</span>
@@ -116,7 +116,7 @@ function DropdownMenu({ label, icon, items, isGroupActive, hiddenSections, onClo
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-border rounded-xl shadow-lg z-50 overflow-hidden">
+        <div className="absolute top-full left-0 mt-1 w-64 bg-white dark:bg-navy-800 border border-border dark:border-navy-700 rounded-xl shadow-lg z-50 overflow-hidden">
           <div className="py-1">
             {visibleItems.map((item) => {
               const active = pathname === item.href || pathname.startsWith(item.href + "/");
@@ -126,17 +126,17 @@ function DropdownMenu({ label, icon, items, isGroupActive, hiddenSections, onClo
                   href={item.href}
                   onClick={() => { setOpen(false); onClose(); }}
                   className={[
-                    "flex items-start gap-3 px-4 py-3 hover:bg-navy-50 transition-colors",
+                    "flex items-start gap-3 px-4 py-3 hover:bg-navy-50 dark:hover:bg-navy-700 transition-colors",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                    active ? "bg-primary-light" : "",
+                    active ? "bg-primary-light dark:bg-navy-700" : "",
                   ].join(" ")}
                 >
                   <span className="text-lg mt-0.5 flex-shrink-0" aria-hidden="true">{item.icon}</span>
                   <div>
-                    <p className={`text-sm font-medium ${active ? "text-primary" : "text-navy-900"}`}>
+                    <p className={`text-sm font-medium ${active ? "text-primary dark:text-navy-100" : "text-navy-900 dark:text-gray-100"}`}>
                       {item.label}
                     </p>
-                    <p className="text-xs text-navy-400 mt-0.5">{item.desc}</p>
+                    <p className="text-xs text-navy-400 dark:text-navy-300 mt-0.5">{item.desc}</p>
                   </div>
                   {active && (
                     <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" aria-hidden="true" />
@@ -168,7 +168,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
   const visibleStandalone = standaloneLinks.filter((l) => !hiddenSections.includes(l.key));
 
   return (
-    <nav aria-label="Main navigation" className="bg-white border-b border-border shadow-sm sticky top-0 z-40">
+    <nav aria-label="Main navigation" className="bg-white dark:bg-navy-900 border-b border-border dark:border-navy-800 shadow-sm sticky top-0 z-40">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
@@ -192,11 +192,11 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
             </div>
             <Link
               href="/"
-              className="text-navy-900 font-semibold text-base hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded leading-tight"
+              className="text-navy-900 dark:text-gray-100 font-semibold text-base hover:text-primary dark:hover:text-navy-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded leading-tight"
             >
               <span className="block">{profile?.fullName ?? "Professor"}</span>
               {profile?.title && (
-                <span className="block text-xs font-normal text-navy-500 truncate max-w-[180px]">
+                <span className="block text-xs font-normal text-navy-500 dark:text-navy-300 truncate max-w-[180px]">
                   {profile.title}
                 </span>
               )}
@@ -210,7 +210,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                 aria-expanded={mobileMenuOpen}
                 aria-controls="mobile-menu"
                 aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                className="p-2 rounded-md text-navy-700 hover:bg-navy-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                className="p-2 rounded-md text-navy-700 dark:text-gray-200 hover:bg-navy-100 dark:hover:bg-navy-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               >
                 {mobileMenuOpen ? (
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -237,8 +237,8 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                   "px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isActive(link.href)
-                    ? "bg-primary-light text-primary font-semibold"
-                    : "text-navy-700 hover:bg-navy-50 hover:text-navy-900",
+                    ? "bg-primary-light dark:bg-navy-800 text-primary dark:text-navy-100 font-semibold"
+                    : "text-navy-700 dark:text-gray-200 hover:bg-navy-50 dark:hover:bg-navy-800 hover:text-navy-900 dark:hover:text-white",
                 ].join(" ")}
               >
                 {link.label}
@@ -267,8 +267,8 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                   "px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isActive(contactLink.href)
-                    ? "bg-primary-light text-primary font-semibold"
-                    : "text-navy-700 hover:bg-navy-50 hover:text-navy-900",
+                    ? "bg-primary-light dark:bg-navy-800 text-primary dark:text-navy-100 font-semibold"
+                    : "text-navy-700 dark:text-gray-200 hover:bg-navy-50 dark:hover:bg-navy-800 hover:text-navy-900 dark:hover:text-white",
                 ].join(" ")}
               >
                 {contactLink.label}
@@ -276,7 +276,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
             )}
 
             {/* Divider */}
-            <div className="w-px h-5 bg-border mx-1" aria-hidden="true" />
+            <div className="w-px h-5 bg-border dark:bg-navy-700 mx-1" aria-hidden="true" />
 
             {/* Language + Theme */}
             <LanguageSwitcher />
@@ -293,7 +293,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
 
       {/* ── MOBILE MENU ── */}
       {mobileMenuOpen && (
-        <div id="mobile-menu" className="lg:hidden border-t border-border bg-white">
+        <div id="mobile-menu" className="lg:hidden border-t border-border dark:border-navy-800 bg-white dark:bg-navy-900">
           <div className="px-4 py-3 space-y-1">
 
             {/* Standalone links */}
@@ -306,8 +306,8 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                 className={[
                   "block px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
                   isActive(link.href)
-                    ? "bg-primary-light text-primary font-semibold"
-                    : "text-navy-700 hover:bg-navy-50",
+                    ? "bg-primary-light dark:bg-navy-800 text-primary dark:text-navy-100 font-semibold"
+                    : "text-navy-700 dark:text-gray-200 hover:bg-navy-50 dark:hover:bg-navy-800",
                 ].join(" ")}
               >
                 {link.label}
@@ -328,7 +328,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                     aria-expanded={isOpen}
                     className={[
                       "w-full flex items-center justify-between px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
-                      groupActive ? "text-primary" : "text-navy-700 hover:bg-navy-50",
+                      groupActive ? "text-primary dark:text-navy-200" : "text-navy-700 dark:text-gray-200 hover:bg-navy-50 dark:hover:bg-navy-800",
                     ].join(" ")}
                   >
                     <span className="flex items-center gap-2">
@@ -344,7 +344,7 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                   </button>
 
                   {isOpen && (
-                    <div className="ml-4 mt-1 space-y-1 border-l-2 border-primary-light pl-3">
+                    <div className="ml-4 mt-1 space-y-1 border-l-2 border-primary-light dark:border-navy-700 pl-3">
                       {visibleItems.map((item) => (
                         <Link
                           key={item.href}
@@ -353,8 +353,8 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                           className={[
                             "flex items-center gap-2 px-3 py-2 rounded-md text-sm transition-colors",
                             isActive(item.href)
-                              ? "bg-primary-light text-primary font-semibold"
-                              : "text-navy-600 hover:bg-navy-50 hover:text-navy-900",
+                              ? "bg-primary-light dark:bg-navy-800 text-primary dark:text-navy-100 font-semibold"
+                              : "text-navy-600 dark:text-gray-300 hover:bg-navy-50 dark:hover:bg-navy-800 hover:text-navy-900 dark:hover:text-white",
                           ].join(" ")}
                         >
                           <span aria-hidden="true">{item.icon}</span>
@@ -376,8 +376,8 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
                 className={[
                   "block px-3 py-2.5 rounded-md text-sm font-medium transition-colors",
                   isActive(contactLink.href)
-                    ? "bg-primary-light text-primary font-semibold"
-                    : "text-navy-700 hover:bg-navy-50",
+                    ? "bg-primary-light dark:bg-navy-800 text-primary dark:text-navy-100 font-semibold"
+                    : "text-navy-700 dark:text-gray-200 hover:bg-navy-50 dark:hover:bg-navy-800",
                 ].join(" ")}
               >
                 {contactLink.label}

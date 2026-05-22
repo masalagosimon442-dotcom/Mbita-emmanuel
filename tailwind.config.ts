@@ -29,6 +29,7 @@ const config: Config = {
           700: "#334e68",  // contrast ~7.1:1 on white — passes AA for normal text
           800: "#243b53",  // contrast ~10.4:1 on white
           900: "#102a43",  // contrast ~14.2:1 on white — primary body text
+          950: "#0a1929",  // extra dark for dark mode footer
         },
         // Accessible grays
         gray: {
@@ -51,8 +52,8 @@ const config: Config = {
           red:    "#9b1c1c",  // contrast ~8.5:1 on white — passes AA
         },
         // Semantic aliases
-        background: "#ffffff",
-        foreground:  "#102a43",  // navy-900
+        background: "var(--background)",
+        foreground: "var(--foreground)",
         muted:       "#555555",  // gray-600
         border:      "#d9d9d9",  // gray-200
         primary: {

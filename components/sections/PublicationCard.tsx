@@ -80,8 +80,8 @@ export default function PublicationCard({
         </CardHeader>
 
         <CardContent className="flex-1 space-y-1">
-          <p className="text-sm text-navy-700">{authors.join(", ")}</p>
-          <p className="text-sm text-navy-600">
+          <p className="text-sm text-navy-700 dark:text-gray-300">{authors.join(", ")}</p>
+          <p className="text-sm text-navy-600 dark:text-navy-300">
             <span className="italic">{venue}</span>
             {" · "}
             <span className="font-medium">{year}</span>

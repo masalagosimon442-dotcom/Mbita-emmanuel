@@ -5,9 +5,9 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantClasses = {
-  default: "bg-white border border-border",
-  bordered: "bg-white border-2 border-navy-200",
-  elevated: "bg-white shadow-md",
+  default: "bg-white dark:bg-navy-800 border border-border dark:border-navy-700",
+  bordered: "bg-white dark:bg-navy-800 border-2 border-navy-200 dark:border-navy-700",
+  elevated: "bg-white dark:bg-navy-800 shadow-md",
 };
 
 export default function Card({
@@ -56,7 +56,7 @@ export function CardTitle({
 }: CardTitleProps) {
   return (
     <Component
-      className={["text-xl font-semibold text-navy-900", className].join(" ")}
+      className={["text-xl font-semibold text-navy-900 dark:text-gray-100", className].join(" ")}
       {...props}
     >
       {children}
@@ -72,7 +72,7 @@ export function CardContent({
   ...props
 }: CardContentProps) {
   return (
-    <div className={["text-navy-700", className].join(" ")} {...props}>
+    <div className={["text-navy-700 dark:text-gray-300", className].join(" ")} {...props}>
       {children}
     </div>
   );
@@ -87,7 +87,7 @@ export function CardFooter({
 }: CardFooterProps) {
   return (
     <div
-      className={["mt-4 pt-4 border-t border-border", className].join(" ")}
+      className={["mt-4 pt-4 border-t border-border dark:border-navy-700", className].join(" ")}
       {...props}
     >
       {children}

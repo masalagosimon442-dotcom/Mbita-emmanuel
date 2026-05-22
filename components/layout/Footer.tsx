@@ -25,7 +25,7 @@ export default function Footer({ profile }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-navy-900 text-white mt-auto">
+    <footer className="bg-navy-900 dark:bg-navy-950 text-white mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Professor info with avatar */}
