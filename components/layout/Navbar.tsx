@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ProfessorAvatar from "@/components/ui/ProfessorAvatar";
 import ThemeToggle from "@/components/ui/ThemeToggle";
-import LanguageSwitcher from "@/components/ui/LanguageSwitcher";
 
 interface NavbarProfile {
   fullName: string;
@@ -278,14 +277,12 @@ export default function Navbar({ profile, hiddenSections = [] }: NavbarProps) {
             {/* Divider */}
             <div className="w-px h-5 bg-border dark:bg-navy-700 mx-1" aria-hidden="true" />
 
-            {/* Language + Theme */}
-            <LanguageSwitcher />
+            {/* Theme */}
             <ThemeToggle />
           </div>
 
           {/* ── MOBILE EXTRAS ── */}
           <div className="lg:hidden flex items-center gap-2">
-            <LanguageSwitcher />
             <ThemeToggle />
           </div>
         </div>
