@@ -38,7 +38,6 @@ export default function ConditionalLayout({
   navbarProfile,
   footerProfile,
   hiddenSections = [],
-  tawktoId,
 }: ConditionalLayoutProps) {
   const pathname = usePathname();
   const isAdmin = isAdminPath(pathname);

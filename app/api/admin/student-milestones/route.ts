@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
   if (!session.username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
   const { dueDate, ...rest } = parsed.data;
   const item = await prisma.studentMilestone.create({
     data: { ...rest, dueDate: dueDate ? new Date(dueDate) : undefined },

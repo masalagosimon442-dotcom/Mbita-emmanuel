@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import ResearchForm from "@/components/forms/admin/ResearchForm";
@@ -77,7 +77,7 @@ export default function AdminResearchPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadProjects() {
+  const loadProjects = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/research");
       const data = await res.json();
@@ -87,9 +87,9 @@ export default function AdminResearchPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadProjects(); }, []);
+  useEffect(() => { loadProjects(); }, [loadProjects]);
 
   // Clear selection when filters change
   useEffect(() => { setSelected(new Set()); }, [statusFilter, publishedFilter]);
@@ -305,12 +305,8 @@ export default function AdminResearchPage() {
         title={editingProject ? "Edit Research Project" : "New Research Project"}
         size="lg"
       >
-        <ResearchForm
-          initialData={editingProject ?? undefined}
-          onSubmit={handleSubmit}
-          onCancel={() => setModalOpen(false)}
-          isLoading={saving}
-        />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <ResearchForm initialData={(editingProject ?? undefined) as any} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
       </Modal>
     </div>
   );

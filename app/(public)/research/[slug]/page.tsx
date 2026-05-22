@@ -76,9 +76,9 @@ export default async function ResearchDetailPage({ params }: { params: { slug: s
   const descriptionHtml = await renderMarkdown(project.description);
   const fundingSources = Array.isArray(project.fundingSources) ? (project.fundingSources as string[]) : [];
   const collaborators = Array.isArray(project.collaborators) ? (project.collaborators as string[]) : [];
-  const teamMembers = Array.isArray(project.teamMembers) ? (project.teamMembers as TeamMember[]) : [];
-  const milestones = Array.isArray(project.milestones) ? (project.milestones as Milestone[]) : [];
-  const documents = Array.isArray(project.documents) ? (project.documents as Document[]) : [];
+  const teamMembers = Array.isArray(project.teamMembers) ? (project.teamMembers as unknown as TeamMember[]) : [];
+  const milestones = Array.isArray(project.milestones) ? (project.milestones as unknown as Milestone[]) : [];
+  const documents = Array.isArray(project.documents) ? (project.documents as unknown as Document[]) : [];
   const tags = Array.isArray(project.tags) ? (project.tags as string[]) : [];
 
   return (

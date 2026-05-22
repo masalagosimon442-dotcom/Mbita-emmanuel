@@ -196,30 +196,36 @@ export default function PresentationsPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Presentation" : "Add Presentation"} size="lg">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1">Title *
             <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Event/Conference *</label>
+              <label className="block text-sm font-medium mb-1">Event/Conference *
               <input required value={form.event} onChange={e => setForm(p => ({ ...p, event: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Date *</label>
+              <label className="block text-sm font-medium mb-1">Date *
               <input required type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Slides URL</label>
+              <label className="block text-sm font-medium mb-1">Slides URL
               <input type="url" value={form.slideUrl} onChange={e => setForm(p => ({ ...p, slideUrl: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Video URL</label>
+              <label className="block text-sm font-medium mb-1">Video URL
               <input type="url" value={form.videoUrl} onChange={e => setForm(p => ({ ...p, videoUrl: e.target.value }))} className={inputClass} />
+              </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
+            <label className="block text-sm font-medium mb-1">Description
             <textarea rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="pres-pub" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} className="w-4 h-4" />

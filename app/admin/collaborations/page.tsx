@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import CollaboratorForm from "@/components/forms/admin/CollaboratorForm";
@@ -103,7 +103,7 @@ export default function AdminCollaborationsPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadData() {
+  const loadData = useCallback(async function () {
     setLoading(true);
     try {
       const [collabRes, resourceRes] = await Promise.all([
@@ -117,9 +117,9 @@ export default function AdminCollaborationsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
 
   // Clear selection when tab or filter changes
   useEffect(() => { setSelected(new Set()); }, [activeTab, typeFilter]);
@@ -375,14 +375,16 @@ export default function AdminCollaborationsPage() {
       {/* Collaborator modal */}
       {activeTab === "collaborators" && (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingCollaborator ? "Edit Collaborator" : "Add Collaborator"} size="lg">
-          <CollaboratorForm initialData={editingCollaborator ?? undefined} onSubmit={handleCollaboratorSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <CollaboratorForm initialData={(editingCollaborator ?? undefined) as any} onSubmit={handleCollaboratorSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
         </Modal>
       )}
 
       {/* Resource modal */}
       {activeTab === "resources" && (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingResource ? "Edit Resource" : "Add Resource"} size="lg">
-          <ResourceForm initialData={editingResource ?? undefined} onSubmit={handleResourceSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          <ResourceForm initialData={(editingResource ?? undefined) as any} onSubmit={handleResourceSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
         </Modal>
       )}
     </div>

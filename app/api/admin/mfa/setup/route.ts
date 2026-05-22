@@ -3,16 +3,16 @@ import { prisma } from "@/lib/prisma";
 import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 import { cookies } from "next/headers";
-import { authenticator } from "otplib";
+import { generateSecret, generateURI } from "otplib";
 
 export async function POST() {
   const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
   if (!session.username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   try {
-    const secret = authenticator.generateSecret();
+    const secret = generateSecret();
     const appName = process.env.MFA_APP_NAME ?? "Professor Website";
-    const otpauth = authenticator.keyuri(session.username, appName, secret);
+    const otpauth = generateURI({ issuer: appName, label: session.username, secret });
 
     // Store secret temporarily (not enabled yet — user must verify first)
     await prisma.adminUser.update({

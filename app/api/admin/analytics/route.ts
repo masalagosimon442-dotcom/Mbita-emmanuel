@@ -67,7 +67,7 @@ export async function GET() {
         newsletter: newsletterCount,
         appointments: appointmentCount,
         testimonials: testimonialCount,
-        announcements: announcementCount,
+        services: announcementCount,
       },
       charts: {
         pubsByType: pubsByType.map((p) => ({ label: p.type, value: p._count.id })),

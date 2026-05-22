@@ -29,7 +29,7 @@ interface HomeSettings {
 export const dynamic = "force-dynamic";
 
 const SECTION_TOGGLES = [
-  { key: "showAnnouncements", label: "Latest Announcements", icon: "📢", desc: "Show announcement banners" },
+  { key: "showAnnouncements", label: "Services We Offer", icon: "🛠️", desc: "Show services section" },
   { key: "showStats", label: "Statistics Counters", icon: "📊", desc: "Animated publication/research counts" },
   { key: "showNewsSlider", label: "News Slider", icon: "📰", desc: "Latest blog posts slider" },
   { key: "showUpcomingEvents", label: "Upcoming Events", icon: "📅", desc: "Next events preview" },
@@ -170,12 +170,14 @@ export default function HomeAdminPage() {
               <h2 className="font-semibold text-navy-900">Site Identity</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-800 mb-1">Site Title</label>
+                  <label className="block text-sm font-medium text-navy-800 mb-1">Site Title
                   <input value={settings.siteTitle} onChange={e => setSettings(p => ({ ...p, siteTitle: e.target.value }))} placeholder="Prof. Jane Smith" className={inputClass} />
+                  </label>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-navy-800 mb-1">Tagline</label>
+                  <label className="block text-sm font-medium text-navy-800 mb-1">Tagline
                   <input value={settings.tagline} onChange={e => setSettings(p => ({ ...p, tagline: e.target.value }))} placeholder="Professor of Computer Science" className={inputClass} />
+                  </label>
                 </div>
               </div>
             </div>
@@ -184,21 +186,25 @@ export default function HomeAdminPage() {
               <h2 className="font-semibold text-navy-900">Hero Banner Text</h2>
               <p className="text-sm text-navy-500">Override the default name/title display with custom text</p>
               <div>
-                <label className="block text-sm font-medium text-navy-800 mb-1">Hero Title Override</label>
+                <label className="block text-sm font-medium text-navy-800 mb-1">Hero Title Override
                 <input value={settings.heroTitle} onChange={e => setSettings(p => ({ ...p, heroTitle: e.target.value }))} placeholder="Leave empty to use professor's name" className={inputClass} />
+                </label>
               </div>
               <div>
-                <label className="block text-sm font-medium text-navy-800 mb-1">Hero Subtitle Override</label>
+                <label className="block text-sm font-medium text-navy-800 mb-1">Hero Subtitle Override
                 <input value={settings.heroSubtitle} onChange={e => setSettings(p => ({ ...p, heroSubtitle: e.target.value }))} placeholder="Leave empty to use professor's title" className={inputClass} />
+                </label>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-800 mb-1">CTA Button Text</label>
+                  <label className="block text-sm font-medium text-navy-800 mb-1">CTA Button Text
                   <input value={settings.heroCTAText} onChange={e => setSettings(p => ({ ...p, heroCTAText: e.target.value }))} placeholder="Get in Touch" className={inputClass} />
+                  </label>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-navy-800 mb-1">CTA Button Link</label>
+                  <label className="block text-sm font-medium text-navy-800 mb-1">CTA Button Link
                   <input value={settings.heroCTALink} onChange={e => setSettings(p => ({ ...p, heroCTALink: e.target.value }))} placeholder="/contact" className={inputClass} />
+                  </label>
                 </div>
               </div>
             </div>
@@ -209,15 +215,15 @@ export default function HomeAdminPage() {
                 <label className="block text-sm font-medium text-navy-800 mb-1">
                   Background Video URL
                   <span className="ml-2 text-xs text-navy-400 font-normal">(MP4 URL — plays silently behind hero)</span>
-                </label>
                 <input type="url" value={settings.heroVideoUrl} onChange={e => setSettings(p => ({ ...p, heroVideoUrl: e.target.value }))} placeholder="https://example.com/video.mp4" className={inputClass} />
+                </label>
               </div>
               <div>
                 <label className="block text-sm font-medium text-navy-800 mb-1">
                   Background Image URL
                   <span className="ml-2 text-xs text-navy-400 font-normal">(Used if no video is set)</span>
-                </label>
                 <input type="url" value={settings.heroImageUrl} onChange={e => setSettings(p => ({ ...p, heroImageUrl: e.target.value }))} placeholder="https://example.com/hero-bg.jpg" className={inputClass} />
+                </label>
               </div>
               <div className="p-3 bg-navy-50 rounded-lg text-xs text-navy-500">
                 💡 <strong>Tip:</strong> Upload your hero photo in <Link href="/admin/profile" className="text-primary hover:underline">Profile → Photos → Homepage Hero Photo</Link>
@@ -257,7 +263,7 @@ export default function HomeAdminPage() {
             </div>
 
             <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-700">
-              <strong>Note:</strong> Sections with no data will not show even if toggled on. Add content first (announcements, testimonials, etc.) for sections to appear.
+              <strong>Note:</strong> Sections with no data will not show even if toggled on. Add content first (services, testimonials, etc.) for sections to appear.
             </div>
           </div>
         )}
@@ -271,7 +277,7 @@ export default function HomeAdminPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
-                  { href: "/admin/announcements", label: "Announcements", icon: "📢", desc: "Add/edit homepage announcements" },
+                  { href: "/admin/announcements", label: "Services", icon: "🛠️", desc: "Add/edit services we offer" },
                   { href: "/admin/testimonials", label: "Testimonials", icon: "💬", desc: "Student testimonials" },
                   { href: "/admin/research", label: "Research Projects", icon: "🔬", desc: "Research highlights" },
                   { href: "/admin/publications", label: "Publications", icon: "📄", desc: "Featured publications" },

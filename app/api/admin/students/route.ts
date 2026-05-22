@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -53,10 +53,12 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const { published, achievements, ...createRest } = result.data;
     const student = await prisma.student.create({
-      data: { ...result.data, published: result.data.published ?? true },
+      data: { ...createRest, published: published ?? true, ...(achievements !== undefined && achievements !== null ? { achievements: achievements as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}) },
     });
     revalidatePath("/students");
+    revalidateTag("home");
     await logAction("CREATE", "students", student.id, student.name, performedBy);
     return NextResponse.json(student, { status: 201 });
   } catch {
@@ -77,10 +79,11 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { id, ...data } = result.data;
+  const { id, published, achievements, ...updateRest } = result.data;
   try {
-    const student = await prisma.student.update({ where: { id }, data });
+    const student = await prisma.student.update({ where: { id }, data: { ...updateRest, published: published ?? undefined, ...(achievements !== undefined && achievements !== null ? { achievements: achievements as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}) } });
     revalidatePath("/students");
+    revalidateTag("home");
     await logAction("UPDATE", "students", student.id, student.name, performedBy);
     return NextResponse.json(student);
   } catch {
@@ -97,6 +100,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const student = await prisma.student.delete({ where: { id } });
     revalidatePath("/students");
+    revalidateTag("home");
     await logAction("DELETE", "students", student.id, student.name, performedBy);
     return NextResponse.json({ success: true });
   } catch {

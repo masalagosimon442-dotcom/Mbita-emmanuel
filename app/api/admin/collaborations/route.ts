@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -77,6 +77,7 @@ export async function POST(request: NextRequest) {
         },
       });
       revalidatePath("/collaborations");
+      revalidateTag("home");
       await logAction("CREATE", "collaborations/resources", resource.id, resource.title, performedBy);
       return NextResponse.json(resource, { status: 201 });
     } catch {
@@ -100,6 +101,7 @@ export async function POST(request: NextRequest) {
       data: { ...result.data, published: result.data.published ?? true },
     });
     revalidatePath("/collaborations");
+    revalidateTag("home");
     await logAction("CREATE", "collaborations", collaborator.id, collaborator.name, performedBy);
     return NextResponse.json(collaborator, { status: 201 });
   } catch {
@@ -133,6 +135,7 @@ export async function PUT(request: NextRequest) {
         },
       });
       revalidatePath("/collaborations");
+      revalidateTag("home");
       await logAction("UPDATE", "collaborations/resources", resource.id, resource.title, performedBy);
       return NextResponse.json(resource);
     } catch {
@@ -147,8 +150,10 @@ export async function PUT(request: NextRequest) {
   }
   const { id, ...data } = result.data;
   try {
-    const collaborator = await prisma.collaborator.update({ where: { id }, data });
+    const { published, ...rest } = data;
+    const collaborator = await prisma.collaborator.update({ where: { id }, data: { ...rest, published: published ?? undefined } });
     revalidatePath("/collaborations");
+    revalidateTag("home");
     await logAction("UPDATE", "collaborations", collaborator.id, collaborator.name, performedBy);
     return NextResponse.json(collaborator);
   } catch {
@@ -167,6 +172,7 @@ export async function DELETE(request: NextRequest) {
     try {
       const resource = await prisma.resource.delete({ where: { id } });
       revalidatePath("/collaborations");
+      revalidateTag("home");
       await logAction("DELETE", "collaborations/resources", resource.id, resource.title, performedBy);
       return NextResponse.json({ success: true });
     } catch {
@@ -177,6 +183,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const collaborator = await prisma.collaborator.delete({ where: { id } });
     revalidatePath("/collaborations");
+    revalidateTag("home");
     await logAction("DELETE", "collaborations", collaborator.id, collaborator.name, performedBy);
     return NextResponse.json({ success: true });
   } catch {

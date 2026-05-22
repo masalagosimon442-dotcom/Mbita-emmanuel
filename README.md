@@ -1,6 +1,6 @@
 # Mbita Emmanuel — Personal Website
 
-A full-featured professor personal website built with Next.js 14, Prisma, and MySQL.
+A full-featured professor personal website built with Next.js 14, Prisma, and PostgreSQL.
 
 ## Features
 - Public website with home, about, research, publications, teaching, blog, events, gallery
@@ -11,6 +11,6 @@ A full-featured professor personal website built with Next.js 14, Prisma, and My
 
 ## Tech Stack
 - **Framework**: Next.js 14 (App Router)
-- **Database**: MySQL + Prisma ORM
+- **Database**: PostgreSQL + Prisma ORM
 - **Styling**: Tailwind CSS
 - **Auth**: iron-session + bcryptjs

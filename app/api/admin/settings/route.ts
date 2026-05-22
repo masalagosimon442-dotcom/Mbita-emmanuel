@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -109,6 +109,8 @@ export async function PUT(request: NextRequest) {
     });
 
     revalidatePath("/");
+    revalidateTag("settings");
+    revalidateTag("home");
     await logAction("UPDATE", "settings", "1", "Site Settings", performedBy);
 
     return NextResponse.json(settings);

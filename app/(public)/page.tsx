@@ -370,14 +370,14 @@ export default async function HomePage() {
           <HomeSearch />
         </section>
 
-        {/* ── ANNOUNCEMENTS ── */}
+        {/* ── SERVICES WE OFFER ── */}
         {show.announcements && announcements.length > 0 && (
           <section className="mb-12">
-            <h2 className="text-2xl font-bold text-navy-900 mb-4">Latest Announcements</h2>
+            <h2 className="text-2xl font-bold text-navy-900 mb-4">Services We Offer</h2>
             <div className="space-y-3">
               {announcements.map((ann) => (
-                <div key={ann.id} className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                  <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-amber-500" aria-hidden="true" />
+                <div key={ann.id} className="flex items-start gap-3 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <span className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-blue-500" aria-hidden="true" />
                   <div>
                     <p className="font-semibold text-navy-900">{ann.title}</p>
                     <p className="text-sm text-navy-700 mt-0.5">{ann.content}</p>

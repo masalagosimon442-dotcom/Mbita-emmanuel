@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import AwardForm from "@/components/forms/admin/AwardForm";
@@ -83,7 +83,7 @@ export default function AdminCVPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadAwards() {
+  const loadAwards = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/cv");
       const data = await res.json();
@@ -93,9 +93,9 @@ export default function AdminCVPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadAwards(); }, []);
+  useEffect(() => { loadAwards(); }, [loadAwards]);
 
   // Clear selection when filter changes
   useEffect(() => { setSelected(new Set()); }, [categoryFilter]);
@@ -310,7 +310,8 @@ export default function AdminCVPage() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingAward ? "Edit Award" : "Add Award"} size="lg">
-        <AwardForm initialData={editingAward ?? undefined} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <AwardForm initialData={(editingAward ?? undefined) as any} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
       </Modal>
     </div>
   );

@@ -99,27 +99,31 @@ export default function AttendancePage() {
           {message && <p className="mb-3 text-sm">{message}</p>}
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="block text-sm font-medium mb-1">Course *</label>
+              <label className="block text-sm font-medium mb-1">Course *
               <select required value={form.courseId} onChange={e => setForm(p => ({ ...p, courseId: e.target.value }))} className={inputClass}>
                 <option value="">Select course</option>
                 {courses.map(c => <option key={c.id} value={c.id}>{c.code}: {c.name}</option>)}
               </select>
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Student Name *</label>
+              <label className="block text-sm font-medium mb-1">Student Name *
               <input required value={form.studentName} onChange={e => setForm(p => ({ ...p, studentName: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Date *</label>
+              <label className="block text-sm font-medium mb-1">Date *
               <input required type="date" value={form.date} onChange={e => setForm(p => ({ ...p, date: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div className="flex items-center gap-3">
               <input type="checkbox" id="present" checked={form.present} onChange={e => setForm(p => ({ ...p, present: e.target.checked }))} className="w-4 h-4" />
               <label htmlFor="present" className="text-sm font-medium text-navy-800">Present</label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Notes</label>
+              <label className="block text-sm font-medium mb-1">Notes
               <input value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} placeholder="Late, excused, etc." className={inputClass} />
+              </label>
             </div>
             <Button type="submit" variant="primary" isLoading={saving} className="w-full">Record</Button>
           </form>
@@ -128,11 +132,12 @@ export default function AttendancePage() {
         {/* Filter + records */}
         <div>
           <div className="mb-3">
-            <label className="block text-sm font-medium mb-1">Filter by Course</label>
+            <label className="block text-sm font-medium mb-1">Filter by Course
             <select value={selectedCourse} onChange={e => setSelectedCourse(e.target.value)} className={inputClass}>
               <option value="">All Courses</option>
               {courses.map(c => <option key={c.id} value={c.id}>{c.code}: {c.name}</option>)}
             </select>
+            </label>
           </div>
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {records.length === 0 ? (

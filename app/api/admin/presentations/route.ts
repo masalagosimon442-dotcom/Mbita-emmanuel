@@ -32,9 +32,9 @@ export async function POST(req: NextRequest) {
   if (!session.username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
-  const { date, ...rest } = parsed.data;
-  const item = await prisma.researchPresentation.create({ data: { ...rest, date: new Date(date) } });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { date, published, ...rest } = parsed.data;
+  const item = await prisma.researchPresentation.create({ data: { ...rest, date: new Date(date), published: published ?? undefined } });
   await logAction("create", "presentations", item.id, item.title, session.username);
   return NextResponse.json(item, { status: 201 });
 }

@@ -141,33 +141,39 @@ export default function GradesPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Grade" : "Add Grade"}>
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Course *</label>
+            <label className="block text-sm font-medium mb-1">Course *
             <select required value={form.courseId} onChange={e => setForm(p => ({ ...p, courseId: e.target.value }))} className={inputClass}>
               <option value="">Select course</option>
               {courses.map(c => <option key={c.id} value={c.id}>{c.code}: {c.name}</option>)}
             </select>
+            </label>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Student Name *</label>
+              <label className="block text-sm font-medium mb-1">Student Name *
               <input required value={form.studentName} onChange={e => setForm(p => ({ ...p, studentName: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Assessment *</label>
+              <label className="block text-sm font-medium mb-1">Assessment *
               <input required value={form.assessment} onChange={e => setForm(p => ({ ...p, assessment: e.target.value }))} placeholder="Midterm, Final, Assignment 1..." className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Score *</label>
+              <label className="block text-sm font-medium mb-1">Score *
               <input required type="number" min={0} value={form.score} onChange={e => setForm(p => ({ ...p, score: parseFloat(e.target.value) }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Max Score</label>
+              <label className="block text-sm font-medium mb-1">Max Score
               <input type="number" min={1} value={form.maxScore} onChange={e => setForm(p => ({ ...p, maxScore: parseFloat(e.target.value) }))} className={inputClass} />
+              </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Notes</label>
+            <label className="block text-sm font-medium mb-1">Notes
             <input value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div className="flex justify-end gap-3">
             <Button type="button" variant="ghost" onClick={() => setModalOpen(false)}>Cancel</Button>

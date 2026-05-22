@@ -143,26 +143,29 @@ export default function ResearchClient({ projects, profileBio }: ResearchClientP
       {showFilters && (
         <div className="bg-navy-50 border border-border rounded-xl p-4 mb-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Status</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Status
             <select value={selectedStatus} onChange={(e) => setSelectedStatus(e.target.value as typeof selectedStatus)} className={selectClass}>
               <option value="">All Statuses</option>
               <option value="active">Active</option>
               <option value="completed">Completed</option>
             </select>
+            </label>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Tag / Topic</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Tag / Topic
             <select value={selectedTag} onChange={(e) => setSelectedTag(e.target.value)} className={selectClass}>
               <option value="">All Tags</option>
               {allTags.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
+            </label>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Start Year</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Start Year
             <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className={selectClass}>
               <option value="">All Years</option>
               {allYears.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
+            </label>
           </div>
         </div>
       )}

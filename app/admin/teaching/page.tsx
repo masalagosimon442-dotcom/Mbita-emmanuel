@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import CourseForm from "@/components/forms/admin/CourseForm";
@@ -59,7 +59,7 @@ export default function AdminTeachingPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadCourses() {
+  const loadCourses = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/teaching");
       const data = await res.json();
@@ -69,9 +69,9 @@ export default function AdminTeachingPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadCourses(); }, []);
+  useEffect(() => { loadCourses(); }, [loadCourses]);
 
   // Clear selection when filter changes
   useEffect(() => { setSelected(new Set()); }, [statusFilter]);
@@ -228,7 +228,8 @@ export default function AdminTeachingPage() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingCourse ? "Edit Course" : "New Course"} size="lg">
-        <CourseForm initialData={editingCourse ?? undefined} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <CourseForm initialData={(editingCourse ?? undefined) as any} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
       </Modal>
     </div>
   );

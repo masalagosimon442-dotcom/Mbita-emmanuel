@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -107,24 +107,41 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
+    // Filter out null values from JSON fields for Prisma compatibility
+    const { academicProfiles, skills, languages, memberships, education, workExperience, certifications, faq, leadershipPositions, mediaAppearances, ...scalarData } = result.data;
+    const jsonFields = {
+      ...(academicProfiles !== null && academicProfiles !== undefined ? { academicProfiles } : {}),
+      ...(skills !== null && skills !== undefined ? { skills } : {}),
+      ...(languages !== null && languages !== undefined ? { languages } : {}),
+      ...(memberships !== null && memberships !== undefined ? { memberships } : {}),
+      ...(education !== null && education !== undefined ? { education } : {}),
+      ...(workExperience !== null && workExperience !== undefined ? { workExperience } : {}),
+      ...(certifications !== null && certifications !== undefined ? { certifications } : {}),
+      ...(faq !== null && faq !== undefined ? { faq } : {}),
+      ...(leadershipPositions !== null && leadershipPositions !== undefined ? { leadershipPositions } : {}),
+      ...(mediaAppearances !== null && mediaAppearances !== undefined ? { mediaAppearances } : {}),
+    };
+    const updateData = { ...scalarData, ...jsonFields };
     const updated = await prisma.profile.upsert({
       where: { id: 1 },
-      update: result.data,
+      update: updateData,
       create: {
         id: 1,
-        ...result.data,
-        academicProfiles: result.data.academicProfiles ?? [],
-        photoUrl: result.data.photoUrl ?? "",
-        navbarPhotoUrl: result.data.navbarPhotoUrl ?? "",
-        heroPhotoUrl: result.data.heroPhotoUrl ?? "",
-        aboutPhotoUrl: result.data.aboutPhotoUrl ?? "",
-        contactPhotoUrl: result.data.contactPhotoUrl ?? "",
-        footerPhotoUrl: result.data.footerPhotoUrl ?? "",
-        adminPhotoUrl: result.data.adminPhotoUrl ?? "",
-        cvUrl: result.data.cvUrl ?? "",
+        ...updateData,
+        academicProfiles: academicProfiles ?? [],
+        photoUrl: scalarData.photoUrl ?? "",
+        navbarPhotoUrl: scalarData.navbarPhotoUrl ?? "",
+        heroPhotoUrl: scalarData.heroPhotoUrl ?? "",
+        aboutPhotoUrl: scalarData.aboutPhotoUrl ?? "",
+        contactPhotoUrl: scalarData.contactPhotoUrl ?? "",
+        footerPhotoUrl: scalarData.footerPhotoUrl ?? "",
+        adminPhotoUrl: scalarData.adminPhotoUrl ?? "",
+        cvUrl: scalarData.cvUrl ?? "",
       },
     });
     revalidatePath("/"); revalidatePath("/about"); revalidatePath("/contact");
+    revalidateTag("profile");
+    revalidateTag("home");
     await logAction("UPDATE", "profile", "1", result.data.fullName, performedBy);
     return NextResponse.json(updated);
   } catch (err) {
@@ -173,6 +190,8 @@ export async function POST(request: NextRequest) {
 
     // Revalidate relevant pages
     for (const p of SLOT_REVALIDATE_MAP[slot]) revalidatePath(p);
+    revalidateTag("profile");
+    revalidateTag("home");
 
     await logAction("UPDATE", "profile", "1", `Photo (${slot})`, performedBy);
 
@@ -199,6 +218,8 @@ export async function DELETE(request: NextRequest) {
   const fieldName = SLOT_FIELD_MAP[slot];
   await prisma.profile.updateMany({ data: { [fieldName]: "" } });
   for (const p of SLOT_REVALIDATE_MAP[slot]) revalidatePath(p);
+  revalidateTag("profile");
+  revalidateTag("home");
 
   return NextResponse.json({ success: true, slot, cleared: fieldName });
 }

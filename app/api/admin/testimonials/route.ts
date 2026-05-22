@@ -30,8 +30,9 @@ export async function POST(req: NextRequest) {
   if (!session.username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
-  const item = await prisma.testimonial.create({ data: parsed.data });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { published, ...createFields } = parsed.data;
+  const item = await prisma.testimonial.create({ data: { ...createFields, published: published ?? undefined } });
   await logAction("create", "testimonials", item.id, item.name, session.username);
   return NextResponse.json(item, { status: 201 });
 }
@@ -43,8 +44,9 @@ export async function PUT(req: NextRequest) {
   const { id, ...data } = body;
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
   const parsed = schema.partial().safeParse(data);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
-  const item = await prisma.testimonial.update({ where: { id }, data: parsed.data });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { published: pub, ...updateFields } = parsed.data;
+  const item = await prisma.testimonial.update({ where: { id }, data: { ...updateFields, published: pub ?? undefined } });
   await logAction("update", "testimonials", item.id, item.name, session.username);
   return NextResponse.json(item);
 }

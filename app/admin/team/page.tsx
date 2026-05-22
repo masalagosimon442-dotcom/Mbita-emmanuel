@@ -201,33 +201,40 @@ export default function TeamPage() {
         <form onSubmit={handleSave} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Name *</label>
+              <label className="block text-sm font-medium mb-1">Name *
               <input required value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Role *</label>
+              <label className="block text-sm font-medium mb-1">Role *
               <input required value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))} placeholder="PhD Student, Postdoc..." className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
+              <label className="block text-sm font-medium mb-1">Email
               <input type="email" value={form.email} onChange={e => setForm(p => ({ ...p, email: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Joined Year</label>
+              <label className="block text-sm font-medium mb-1">Joined Year
               <input type="number" value={form.joinedYear} onChange={e => setForm(p => ({ ...p, joinedYear: parseInt(e.target.value) }))} className={inputClass} />
+              </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Photo URL</label>
+            <label className="block text-sm font-medium mb-1">Photo URL
             <input type="url" value={form.photoUrl} onChange={e => setForm(p => ({ ...p, photoUrl: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Research Area</label>
+            <label className="block text-sm font-medium mb-1">Research Area
             <input value={form.researchArea} onChange={e => setForm(p => ({ ...p, researchArea: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Bio</label>
+            <label className="block text-sm font-medium mb-1">Bio
             <textarea rows={3} value={form.bio} onChange={e => setForm(p => ({ ...p, bio: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="team-pub" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} className="w-4 h-4" />

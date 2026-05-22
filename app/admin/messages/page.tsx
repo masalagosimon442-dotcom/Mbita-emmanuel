@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Button from "@/components/ui/Button";
 
 interface ContactMessage {
@@ -34,7 +34,7 @@ export default function AdminMessagesPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadMessages() {
+  const loadMessages = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/messages");
       const data = await res.json();
@@ -44,9 +44,9 @@ export default function AdminMessagesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadMessages(); }, []);
+  useEffect(() => { loadMessages(); }, [loadMessages]);
 
   async function handleMarkRead(msg: ContactMessage) {
     try {

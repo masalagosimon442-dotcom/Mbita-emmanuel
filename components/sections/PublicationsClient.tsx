@@ -186,40 +186,44 @@ export default function PublicationsClient({ publications }: PublicationsClientP
         <div className="bg-navy-50 border border-border rounded-xl p-4 mb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {/* Type */}
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Publication Type</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Publication Type
             <select value={selectedType} onChange={(e) => setSelectedType(e.target.value)} className={`${selectClass} w-full`}>
               <option value="">All Types</option>
               {Object.entries(TYPE_LABELS).map(([val, label]) => (
                 <option key={val} value={val}>{label}</option>
               ))}
             </select>
+            </label>
           </div>
 
           {/* Year */}
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Year</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Year
             <select value={selectedYear} onChange={(e) => setSelectedYear(e.target.value)} className={`${selectClass} w-full`}>
               <option value="">All Years</option>
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
+            </label>
           </div>
 
           {/* Author */}
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Author</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Author
             <select value={selectedAuthor} onChange={(e) => setSelectedAuthor(e.target.value)} className={`${selectClass} w-full`}>
               <option value="">All Authors</option>
               {allAuthors.map((a) => <option key={a} value={a}>{a}</option>)}
             </select>
+            </label>
           </div>
 
           {/* Venue */}
           <div>
-            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Venue / Journal</label>
+            <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide mb-1">Venue / Journal
             <select value={selectedVenue} onChange={(e) => setSelectedVenue(e.target.value)} className={`${selectClass} w-full`}>
               <option value="">All Venues</option>
               {venues.map((v) => <option key={v} value={v} title={v}>{v.length > 35 ? v.slice(0, 35) + "…" : v}</option>)}
             </select>
+            </label>
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import PublicationForm from "@/components/forms/admin/PublicationForm";
@@ -102,7 +102,7 @@ export default function AdminPublicationsPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadPublications() {
+  const loadPublications = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/publications");
       const data = await res.json();
@@ -112,9 +112,9 @@ export default function AdminPublicationsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadPublications(); }, []);
+  useEffect(() => { loadPublications(); }, [loadPublications]);
 
   // Clear selection when filter changes
   useEffect(() => { setSelected(new Set()); }, [publishedFilter]);

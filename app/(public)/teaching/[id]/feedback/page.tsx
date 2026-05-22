@@ -56,7 +56,7 @@ export default function CourseFeedbackPage() {
       <form onSubmit={handleSubmit} className="bg-white border border-border rounded-xl p-6 space-y-6">
         {/* Star rating */}
         <div>
-          <label className="block text-sm font-medium text-navy-800 mb-3">Overall Rating *</label>
+          <span className="block text-sm font-medium text-navy-800 mb-3">Overall Rating *</span>
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map(star => (
               <button

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -66,15 +66,21 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const { published, teamMembers, documents, milestones, tags, fundingSources, collaborators, ...createRest } = result.data;
     const project = await prisma.researchProject.create({
       data: {
-        ...result.data,
-        fundingSources: result.data.fundingSources ?? [],
-        collaborators: result.data.collaborators ?? [],
-        published: result.data.published ?? true,
+        ...createRest,
+        fundingSources: fundingSources ?? [],
+        collaborators: collaborators ?? [],
+        published: published ?? true,
+        ...(teamMembers !== undefined && teamMembers !== null ? { teamMembers: teamMembers as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(documents !== undefined && documents !== null ? { documents: documents as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(milestones !== undefined && milestones !== null ? { milestones: milestones as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(tags !== undefined && tags !== null ? { tags } : {}),
       },
     });
     revalidatePath("/research");
+    revalidateTag("home");
     await logAction("CREATE", "research", project.id, project.title, performedBy);
     return NextResponse.json(project, { status: 201 });
   } catch {
@@ -98,14 +104,24 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { id, ...data } = result.data;
+  const { id, published, teamMembers, documents, milestones, tags, fundingSources, collaborators, ...updateRest } = result.data;
 
   try {
     const project = await prisma.researchProject.update({
       where: { id },
-      data,
+      data: {
+        ...updateRest,
+        published: published ?? undefined,
+        ...(fundingSources !== undefined && fundingSources !== null ? { fundingSources } : {}),
+        ...(collaborators !== undefined && collaborators !== null ? { collaborators } : {}),
+        ...(teamMembers !== undefined && teamMembers !== null ? { teamMembers: teamMembers as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(documents !== undefined && documents !== null ? { documents: documents as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(milestones !== undefined && milestones !== null ? { milestones: milestones as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(tags !== undefined && tags !== null ? { tags } : {}),
+      },
     });
     revalidatePath("/research");
+    revalidateTag("home");
     await logAction("UPDATE", "research", project.id, project.title, performedBy);
     return NextResponse.json(project);
   } catch {
@@ -125,6 +141,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const project = await prisma.researchProject.delete({ where: { id } });
     revalidatePath("/research");
+    revalidateTag("home");
     await logAction("DELETE", "research", project.id, project.title, performedBy);
     return NextResponse.json({ success: true });
   } catch {

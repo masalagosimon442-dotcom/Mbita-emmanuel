@@ -204,34 +204,41 @@ export default function RepositoryPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Repository" : "Add Repository"} size="lg">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1">Title *
             <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description *</label>
+            <label className="block text-sm font-medium mb-1">Description *
             <textarea required rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">GitHub URL</label>
+              <label className="block text-sm font-medium mb-1">GitHub URL
               <input type="url" value={form.repoUrl} onChange={e => setForm(p => ({ ...p, repoUrl: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Demo URL</label>
+              <label className="block text-sm font-medium mb-1">Demo URL
               <input type="url" value={form.demoUrl} onChange={e => setForm(p => ({ ...p, demoUrl: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Language</label>
+              <label className="block text-sm font-medium mb-1">Language
               <input value={form.language} onChange={e => setForm(p => ({ ...p, language: e.target.value }))} placeholder="Python, JavaScript..." className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Stars</label>
+              <label className="block text-sm font-medium mb-1">Stars
               <input type="number" min={0} value={form.stars} onChange={e => setForm(p => ({ ...p, stars: parseInt(e.target.value) || 0 }))} className={inputClass} />
+              </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Tags (comma-separated)</label>
+            <label className="block text-sm font-medium mb-1">Tags (comma-separated)
             <input value={String(form.tags)} onChange={e => setForm(p => ({ ...p, tags: e.target.value }))} placeholder="NLP, machine learning..." className={inputClass} />
+            </label>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="repo-pub" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} className="w-4 h-4" />

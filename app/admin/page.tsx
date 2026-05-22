@@ -52,7 +52,7 @@ async function getDashboardData() {
   };
 }
 
-const countCards = [
+const countCards: readonly { key: string; label: string; href: string; icon: string; highlight?: boolean }[] = [
   { key: "publications", label: "Publications", href: "/admin/publications", icon: "📄" },
   { key: "research", label: "Research Projects", href: "/admin/research", icon: "🔬" },
   { key: "courses", label: "Courses", href: "/admin/teaching", icon: "🎓" },
@@ -64,7 +64,7 @@ const countCards = [
   { key: "resources", label: "Resources", href: "/admin/collaborations", icon: "📚" },
   { key: "gallery", label: "Gallery Items", href: "/admin/gallery", icon: "🖼️" },
   { key: "unreadMessages", label: "Unread Messages", href: "/admin/messages", icon: "✉️", highlight: true },
-] as const;
+];
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("en-US", {
@@ -93,7 +93,7 @@ export default async function AdminDashboard() {
         </h3>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {countCards.map((card) => {
-            const count = counts[card.key];
+            const count = counts[card.key as keyof typeof counts];
             return (
               <a
                 key={card.key}

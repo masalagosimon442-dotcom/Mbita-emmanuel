@@ -58,7 +58,6 @@ const dropdownGroups = [
 ];
 
 const contactLink = { href: "/contact", label: "Contact", key: "contact" };
-const adminLink = { href: "/login", label: "Admin", key: "login" };
 
 // ── DROPDOWN COMPONENT ─────────────────────────────────────────────────────
 interface DropdownProps {

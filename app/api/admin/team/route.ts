@@ -34,8 +34,9 @@ export async function POST(req: NextRequest) {
   if (!session.username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
-  const member = await prisma.teamMember.create({ data: parsed.data });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { published, ...createFields } = parsed.data;
+  const member = await prisma.teamMember.create({ data: { ...createFields, published: published ?? undefined } });
   await logAction("create", "team", member.id, member.name, session.username);
   return NextResponse.json(member, { status: 201 });
 }
@@ -47,8 +48,9 @@ export async function PUT(req: NextRequest) {
   const { id, ...data } = body;
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
   const parsed = schema.partial().safeParse(data);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
-  const member = await prisma.teamMember.update({ where: { id }, data: parsed.data });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { published: pub, ...updateFields } = parsed.data;
+  const member = await prisma.teamMember.update({ where: { id }, data: { ...updateFields, published: pub ?? undefined } });
   await logAction("update", "team", member.id, member.name, session.username);
   return NextResponse.json(member);
 }

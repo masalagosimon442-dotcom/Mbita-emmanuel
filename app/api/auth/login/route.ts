@@ -78,9 +78,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify TOTP token
-    const { authenticator } = await import("otplib");
-    const isValidToken = authenticator.verify({ token: totpToken, secret: adminUser.totpSecret });
-    if (!isValidToken) {
+    const { verify: verifyOtp } = await import("otplib");
+    const otpResult = await verifyOtp({ token: totpToken, secret: adminUser.totpSecret });
+    if (!otpResult.valid) {
       return NextResponse.json({ error: "Invalid MFA code. Please try again.", code: "INVALID_MFA" }, { status: 401 });
     }
   }

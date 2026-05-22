@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import EventForm from "@/components/forms/admin/EventForm";
@@ -71,7 +71,7 @@ export default function AdminEventsPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadEvents() {
+  const loadEvents = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/events");
       const data = await res.json();
@@ -81,9 +81,9 @@ export default function AdminEventsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadEvents(); }, []);
+  useEffect(() => { loadEvents(); }, [loadEvents]);
 
   // Clear selection when filter changes
   useEffect(() => { setSelected(new Set()); }, [publishedFilter]);
@@ -239,7 +239,8 @@ export default function AdminEventsPage() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingEvent ? "Edit Event" : "New Event"} size="lg">
-        <EventForm initialData={editingEvent ?? undefined} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <EventForm initialData={(editingEvent ?? undefined) as any} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
       </Modal>
     </div>
   );

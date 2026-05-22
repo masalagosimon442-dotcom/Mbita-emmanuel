@@ -213,36 +213,43 @@ export default function ProposalsPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Proposal" : "Add Proposal"} size="lg">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1">Title *
             <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description *</label>
+            <label className="block text-sm font-medium mb-1">Description *
             <textarea required rows={4} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
+              <label className="block text-sm font-medium mb-1">Status
               <select value={form.status} onChange={e => setForm(p => ({ ...p, status: e.target.value }))} className={inputClass}>
                 {STATUS_OPTIONS.map(s => <option key={s} value={s} className="capitalize">{s}</option>)}
               </select>
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Funding Body</label>
+              <label className="block text-sm font-medium mb-1">Funding Body
               <input value={form.fundingBody} onChange={e => setForm(p => ({ ...p, fundingBody: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Amount</label>
+              <label className="block text-sm font-medium mb-1">Amount
               <input value={form.amount} onChange={e => setForm(p => ({ ...p, amount: e.target.value }))} placeholder="$50,000" className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Deadline</label>
+              <label className="block text-sm font-medium mb-1">Deadline
               <input type="date" value={form.deadline} onChange={e => setForm(p => ({ ...p, deadline: e.target.value }))} className={inputClass} />
+              </label>
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Notes</label>
+            <label className="block text-sm font-medium mb-1">Notes
             <textarea rows={2} value={form.notes} onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <div className="flex items-center gap-2">
             <input type="checkbox" id="prop-pub" checked={form.published} onChange={e => setForm(p => ({ ...p, published: e.target.checked }))} className="w-4 h-4" />

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -56,10 +56,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    const { published, schedule, materials, ...createRest } = result.data;
     const course = await prisma.course.create({
-      data: { ...result.data, published: result.data.published ?? true },
+      data: {
+        ...createRest,
+        published: published ?? true,
+        ...(schedule !== undefined && schedule !== null ? { schedule: schedule as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(materials !== undefined && materials !== null ? { materials: materials as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+      },
     });
     revalidatePath("/teaching");
+    revalidateTag("home");
     await logAction("CREATE", "teaching", course.id, course.name, performedBy);
     return NextResponse.json(course, { status: 201 });
   } catch {
@@ -81,11 +88,20 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { id, ...data } = result.data;
+  const { id, published, schedule, materials, ...updateRest } = result.data;
 
   try {
-    const course = await prisma.course.update({ where: { id }, data });
+    const course = await prisma.course.update({
+      where: { id },
+      data: {
+        ...updateRest,
+        published: published ?? undefined,
+        ...(schedule !== undefined && schedule !== null ? { schedule: schedule as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+        ...(materials !== undefined && materials !== null ? { materials: materials as unknown as import("@prisma/client").Prisma.InputJsonValue } : {}),
+      },
+    });
     revalidatePath("/teaching");
+    revalidateTag("home");
     await logAction("UPDATE", "teaching", course.id, course.name, performedBy);
     return NextResponse.json(course);
   } catch {
@@ -103,6 +119,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const course = await prisma.course.delete({ where: { id } });
     revalidatePath("/teaching");
+    revalidateTag("home");
     await logAction("DELETE", "teaching", course.id, course.name, performedBy);
     return NextResponse.json({ success: true });
   } catch {

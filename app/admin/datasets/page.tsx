@@ -197,29 +197,35 @@ export default function DatasetsPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Dataset" : "Add Dataset"} size="lg">
         <form onSubmit={handleSave} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1">Title *
             <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Description *</label>
+            <label className="block text-sm font-medium mb-1">Description *
             <textarea required rows={3} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Dataset URL</label>
+              <label className="block text-sm font-medium mb-1">Dataset URL
               <input type="url" value={form.url} onChange={e => setForm(p => ({ ...p, url: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Download URL</label>
+              <label className="block text-sm font-medium mb-1">Download URL
               <input type="url" value={form.fileUrl} onChange={e => setForm(p => ({ ...p, fileUrl: e.target.value }))} className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Format</label>
+              <label className="block text-sm font-medium mb-1">Format
               <input value={form.format} onChange={e => setForm(p => ({ ...p, format: e.target.value }))} placeholder="CSV, JSON, HDF5..." className={inputClass} />
+              </label>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Size</label>
+              <label className="block text-sm font-medium mb-1">Size
               <input value={form.size} onChange={e => setForm(p => ({ ...p, size: e.target.value }))} placeholder="2.3 GB, 500 MB..." className={inputClass} />
+              </label>
             </div>
           </div>
           <div className="flex items-center gap-2">

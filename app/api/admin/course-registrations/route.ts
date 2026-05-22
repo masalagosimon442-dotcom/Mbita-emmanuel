@@ -21,7 +21,7 @@ async function getSession() {
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
 
   // Check if already registered
   const existing = await prisma.courseRegistration.findFirst({

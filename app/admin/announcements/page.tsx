@@ -85,7 +85,7 @@ export default function AnnouncementsAdminPage() {
     setLoading(true);
     const res = await fetch("/api/admin/announcements");
     if (res.ok) setItems(await res.json());
-    else showToast("error", "Failed to load announcements.");
+    else showToast("error", "Failed to load services.");
     setLoading(false);
   }, []);
 
@@ -109,12 +109,12 @@ export default function AnnouncementsAdminPage() {
     try {
       const res = await fetch("/api/admin/announcements", { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       if (res.ok) {
-        showToast("success", editing ? "Announcement updated." : "Announcement added.");
+        showToast("success", editing ? "Service updated." : "Service added.");
         setModalOpen(false);
         fetchItems();
       } else {
         const data = await res.json().catch(() => ({}));
-        showToast("error", data.error ?? "Failed to save announcement.");
+        showToast("error", data.error ?? "Failed to save service.");
       }
     } catch {
       showToast("error", "An unexpected error occurred.");
@@ -129,10 +129,10 @@ export default function AnnouncementsAdminPage() {
       const res = await fetch(`/api/admin/announcements?id=${deleteId}`, { method: "DELETE" });
       setDeleteId(null);
       if (res.ok) {
-        showToast("success", "Announcement deleted.");
+        showToast("success", "Service deleted.");
         fetchItems();
       } else {
-        showToast("error", "Failed to delete announcement.");
+        showToast("error", "Failed to delete service.");
       }
     } catch {
       showToast("error", "An unexpected error occurred.");
@@ -150,7 +150,7 @@ export default function AnnouncementsAdminPage() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-navy-900">Announcements</h1>
+        <h1 className="text-2xl font-bold text-navy-900">Services We Offer</h1>
         <div className="flex items-center gap-2">
           <select
             value={publishedFilter}
@@ -161,7 +161,7 @@ export default function AnnouncementsAdminPage() {
             <option value="published">Published</option>
             <option value="hidden">Hidden</option>
           </select>
-          <Button variant="primary" onClick={openCreate}>+ Add Announcement</Button>
+          <Button variant="primary" onClick={openCreate}>+ Add Service</Button>
         </div>
       </div>
 
@@ -184,7 +184,7 @@ export default function AnnouncementsAdminPage() {
       {loading ? (
         <p className="text-navy-500">Loading...</p>
       ) : filteredItems.length === 0 ? (
-        <p className="text-navy-500 text-center py-12">No announcements yet.</p>
+        <p className="text-navy-500 text-center py-12">No services yet.</p>
       ) : (
         <>
           <div className="mb-3 flex items-center gap-2">
@@ -215,7 +215,7 @@ export default function AnnouncementsAdminPage() {
         </>
       )}
 
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Announcement" : "Add Announcement"}>
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Edit Service" : "New Service"}>
         <form onSubmit={handleSave} className="space-y-4">
           <div>
             <label htmlFor="ann-title" className="block text-sm font-medium mb-1">Title *</label>
@@ -241,7 +241,7 @@ export default function AnnouncementsAdminPage() {
       </Modal>
 
       <Modal isOpen={!!deleteId} onClose={() => setDeleteId(null)} title="Confirm Delete">
-        <p className="text-navy-700 mb-6">Are you sure you want to delete this announcement?</p>
+        <p className="text-navy-700 mb-6">Are you sure you want to delete this service?</p>
         <div className="flex justify-end gap-3">
           <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
           <Button variant="danger" onClick={handleDelete}>Delete</Button>

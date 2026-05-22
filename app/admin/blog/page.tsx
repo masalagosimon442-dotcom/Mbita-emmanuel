@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
 import BlogPostForm from "@/components/forms/admin/BlogPostForm";
@@ -72,7 +72,7 @@ export default function AdminBlogPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadPosts() {
+  const loadPosts = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/blog");
       const data = await res.json();
@@ -82,9 +82,9 @@ export default function AdminBlogPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadPosts(); }, []);
+  useEffect(() => { loadPosts(); }, [loadPosts]);
 
   // Clear selection when filter changes
   useEffect(() => { setSelected(new Set()); }, [draftFilter]);
@@ -238,7 +238,8 @@ export default function AdminBlogPage() {
       )}
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={editingPost ? "Edit Blog Post" : "New Blog Post"} size="xl">
-        <BlogPostForm initialData={editingPost ?? undefined} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
+        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+        <BlogPostForm initialData={(editingPost ?? undefined) as any} onSubmit={handleSubmit} onCancel={() => setModalOpen(false)} isLoading={saving} />
       </Modal>
     </div>
   );

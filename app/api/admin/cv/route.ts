@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       await writeFile(filePath, buffer);
 
       revalidatePath("/cv");
+      revalidateTag("home");
       await logAction("UPDATE", "cv", null, "CV PDF", performedBy);
 
       return NextResponse.json({ success: true, url: "/cv.pdf" });
@@ -92,6 +93,7 @@ export async function POST(request: NextRequest) {
       data: { ...result.data, published: result.data.published ?? true },
     });
     revalidatePath("/cv");
+    revalidateTag("home");
     await logAction("CREATE", "cv", award.id, award.name, performedBy);
     return NextResponse.json(award, { status: 201 });
   } catch {
@@ -114,8 +116,10 @@ export async function PUT(request: NextRequest) {
 
   const { id, ...data } = result.data;
   try {
-    const award = await prisma.award.update({ where: { id }, data });
+    const { published, ...rest } = data;
+    const award = await prisma.award.update({ where: { id }, data: { ...rest, published: published ?? undefined } });
     revalidatePath("/cv");
+    revalidateTag("home");
     await logAction("UPDATE", "cv", award.id, award.name, performedBy);
     return NextResponse.json(award);
   } catch {
@@ -132,6 +136,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const award = await prisma.award.delete({ where: { id } });
     revalidatePath("/cv");
+    revalidateTag("home");
     await logAction("DELETE", "cv", award.id, award.name, performedBy);
     return NextResponse.json({ success: true });
   } catch {

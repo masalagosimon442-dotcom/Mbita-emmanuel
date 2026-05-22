@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Modal from "@/components/ui/Modal";
 import Button from "@/components/ui/Button";
@@ -72,7 +72,7 @@ export default function AdminGalleryPage() {
     setTimeout(() => setToast(null), 4000);
   }
 
-  async function loadItems() {
+  const loadItems = useCallback(async function () {
     try {
       const res = await fetch("/api/admin/gallery");
       const data = await res.json();
@@ -82,9 +82,9 @@ export default function AdminGalleryPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  useEffect(() => { loadItems(); }, []);
+  useEffect(() => { loadItems(); }, [loadItems]);
 
   // Clear selection when filters change
   useEffect(() => { setSelected(new Set()); }, [publishedFilter, categoryFilter]);

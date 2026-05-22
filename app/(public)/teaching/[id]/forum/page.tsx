@@ -72,16 +72,19 @@ export default function CourseForumPage() {
         <form onSubmit={handleSubmit} className="bg-white border border-border rounded-xl p-5 mb-6 space-y-3">
           <h2 className="font-semibold text-navy-900">Start a Discussion</h2>
           <div>
-            <label className="block text-sm font-medium mb-1">Your Name *</label>
+            <label className="block text-sm font-medium mb-1">Your Name *
             <input required value={form.author} onChange={e => setForm(p => ({ ...p, author: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Title *</label>
+            <label className="block text-sm font-medium mb-1">Title *
             <input required value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} className={inputClass} />
+            </label>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Message *</label>
+            <label className="block text-sm font-medium mb-1">Message *
             <textarea required rows={4} value={form.content} onChange={e => setForm(p => ({ ...p, content: e.target.value }))} className={`${inputClass} resize-none`} />
+            </label>
           </div>
           <button type="submit" disabled={submitting}
             className="px-5 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-hover transition-colors disabled:opacity-60">

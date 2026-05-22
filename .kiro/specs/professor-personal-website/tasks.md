@@ -2,7 +2,7 @@
 
 ## Overview
 
-Implement a full-stack academic personal website using Next.js 14 (App Router), TypeScript, MySQL 8, Prisma ORM, Tailwind CSS, iron-session, bcryptjs, nodemailer, zod, and fast-check. The implementation follows a bottom-up order: project scaffolding → database schema → shared layout → public pages → admin panel → contact form → error pages → SEO → accessibility hardening → property-based tests → integration tests → performance validation.
+Implement a full-stack academic personal website using Next.js 14 (App Router), TypeScript, PostgreSQL, Prisma ORM, Tailwind CSS, iron-session, bcryptjs, nodemailer, zod, and fast-check. The implementation follows a bottom-up order: project scaffolding → database schema → shared layout → public pages → admin panel → contact form → error pages → SEO → accessibility hardening → property-based tests → integration tests → performance validation.
 
 ## Tasks
 
@@ -60,7 +60,7 @@ Implement a full-stack academic personal website using Next.js 14 (App Router), 
 
 - [x] 4. Home page
   - Create `app/(public)/page.tsx` as an SSG page
-  - Fetch the singleton `Profile` row from MySQL via Prisma at build time
+  - Fetch the singleton `Profile` row from PostgreSQL via Prisma at build time
   - Display full name, academic title, institutional affiliation, department, and biographical summary
   - Render the professor's photo as a large hero image using Next.js `<Image>` with `priority` (LCP element), `width={300}`, `height={300}`, and `alt="{fullName} — {title}"`; fall back to a placeholder avatar SVG if `photoUrl` is null
   - Display links to academic profiles (Google Scholar, ORCID, etc.) from `Profile.academicProfiles`
@@ -370,7 +370,7 @@ Implement a full-stack academic personal website using Next.js 14 (App Router), 
 
 - [x] 17. Admin panel — layout and dashboard
   - Create `app/admin/layout.tsx` wrapping all admin pages with `AdminLayout` (sidebar + header with logout button)
-  - Create `app/admin/page.tsx` as the dashboard showing a summary count of each content type fetched from MySQL
+  - Create `app/admin/page.tsx` as the dashboard showing a summary count of each content type fetched from PostgreSQL
   - The logout button POSTs to `/api/auth/logout` then redirects to `/`
   - _Requirements: 15.8, 15.9_
 
@@ -441,7 +441,7 @@ Implement a full-stack academic personal website using Next.js 14 (App Router), 
   - Ensure all tests pass, ask the user if questions arise.
 
 - [x] 28.1 Admin panel — Contact message inbox
-  - Update `app/api/contact/route.ts` to also save every submission as a `ContactMessage` row in MySQL (regardless of email delivery outcome)
+  - Update `app/api/contact/route.ts` to also save every submission as a `ContactMessage` row in PostgreSQL (regardless of email delivery outcome)
   - Create `app/api/admin/messages/route.ts` (GET all messages, PATCH to mark read, DELETE to remove)
   - Create `app/admin/messages/page.tsx` displaying all contact messages with sender name, email, date, read/unread status, and message body
   - Add mark-as-read and delete actions with confirmation dialog
@@ -461,7 +461,7 @@ Implement a full-stack academic personal website using Next.js 14 (App Router), 
   - _Requirements: 17.1, 17.2, 17.3, 17.4, 17.6, 17.8_
 
 - [x] 28.3 Admin panel — Maintenance mode middleware
-  - Update `middleware.ts` to check `SiteSettings.maintenanceMode` from MySQL on every public request
+  - Update `middleware.ts` to check `SiteSettings.maintenanceMode` from PostgreSQL on every public request
   - WHEN maintenance mode is active, redirect all public routes (except `/login` and `/admin/*`) to a maintenance page returning HTTP 503
   - Create `app/maintenance/page.tsx` displaying the custom maintenance message from `SiteSettings`
   - _Requirements: 17.6, 17.7_
@@ -536,7 +536,7 @@ Implement a full-stack academic personal website using Next.js 14 (App Router), 
   - [ ]* 33.1 Write property test for content round-trip integrity
     - **Property 10: Content round-trip integrity**
     - **Validates: Requirements 8.2, 12.8**
-    - Generate arbitrary content objects for each supported type (Publication, ResearchProject, Course, Student, Award, Event, Collaborator, Resource, GalleryItem, BlogPost) using fast-check; write each to a test MySQL database via the admin API (mocked Prisma); read back via Prisma; assert deep equality ignoring `createdAt` and `updatedAt`
+    - Generate arbitrary content objects for each supported type (Publication, ResearchProject, Course, Student, Award, Event, Collaborator, Resource, GalleryItem, BlogPost) using fast-check; write each to a test PostgreSQL database via the admin API (mocked Prisma); read back via Prisma; assert deep equality ignoring `createdAt` and `updatedAt`
     - Tag: `// Feature: professor-personal-website, Property 10: Content round-trip integrity`
 
 - [x] 34. Accessibility hardening
@@ -596,6 +596,6 @@ Implement a full-stack academic personal website using Next.js 14 (App Router), 
 - Admin API routes must always call `revalidatePath` after writes so public ISR pages reflect changes within 60 seconds
 - Never commit `.env` to source control; use `.env.example` as the template
 - The `AdminUser` and `SiteSettings` singleton rows must be seeded via `prisma/seed.ts` before first use
-- Contact messages are always saved to MySQL even if email delivery fails — admin can read them in the inbox
+- Contact messages are always saved to PostgreSQL even if email delivery fails — admin can read them in the inbox
 - The `published` flag on all content models means the admin can hide any item from the public site without deleting it
 - Maintenance mode blocks all public routes (HTTP 503) while keeping `/admin/*` and `/login` accessible

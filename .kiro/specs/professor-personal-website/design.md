@@ -8,7 +8,7 @@ The professor personal website is a full-stack web application that serves as a 
 
 - **Public site**: Fast, accessible, SEO-optimised pages for all 12 navigation sections.
 - **Admin panel**: Secure, session-protected CRUD interface for all content types.
-- **Content storage**: MySQL database accessed via Prisma ORM — structured, relational, easy to query and back up, compatible with free hosting tiers.
+- **Content storage**: PostgreSQL database accessed via Prisma ORM — structured, relational, easy to query and back up, compatible with free hosting tiers.
 - **Security**: HTTPS-only, bcrypt-hashed credentials, brute-force lockout, short-lived sessions.
 - **Accessibility**: WCAG 2.1 Level AA throughout.
 
@@ -19,15 +19,15 @@ The professor personal website is a full-stack web application that serves as a 
 | Runtime | Node.js 20 LTS | Widely supported, large ecosystem, good performance |
 | Framework | Next.js 14 (App Router) | SSR/SSG hybrid, built-in routing, image optimisation, excellent SEO support |
 | Styling | Tailwind CSS | Utility-first, responsive design, easy to enforce contrast ratios |
-| Database | MySQL 8 | Widely available on free/shared hosting, relational, mature |
-| ORM | Prisma | Type-safe queries, auto-generated client, easy migrations, works with MySQL |
+| Database | PostgreSQL | Widely available on free/shared hosting, relational, mature |
+| ORM | Prisma | Type-safe queries, auto-generated client, easy migrations, works with PostgreSQL |
 | Authentication | Custom session with `iron-session` | Lightweight, secure, no third-party auth service required |
 | Password hashing | `bcryptjs` | Industry-standard, slow hash to resist brute force |
 | Email delivery | `nodemailer` (SMTP) | Flexible, works with any SMTP provider |
 | Form validation | `zod` | Schema-based, shared between client and server |
 | Image handling | Next.js `<Image>` component | Automatic optimisation, lazy loading, responsive sizes |
 | Testing | Jest + React Testing Library + `fast-check` (PBT) | Standard ecosystem, property-based testing support |
-| Deployment target | Railway, PlanetScale, or any MySQL-compatible host | Free MySQL tiers available |
+| Deployment target | Railway, Supabase, Neon, or any PostgreSQL host | Free PostgreSQL tiers available |
 
 ---
 
@@ -50,7 +50,7 @@ graph TD
     end
 
     subgraph Content Layer
-        DB[(MySQL Database)]
+        DB[(PostgreSQL Database)]
         CV[CV PDF<br/>/public/cv.pdf]
         IMG[Images<br/>/public/images/]
     end
@@ -75,14 +75,14 @@ graph TD
 **Public page request:**
 1. Browser requests a public URL.
 2. Next.js serves a statically generated (SSG) or server-rendered (SSR) page.
-3. Page fetches content from MySQL via Prisma at build time (SSG) or request time (SSR).
+3. Page fetches content from PostgreSQL via Prisma at build time (SSG) or request time (SSR).
 4. HTML is returned with full content for SEO crawlers.
 
 **Admin panel request:**
 1. Browser requests `/admin/*`.
 2. Next.js middleware checks for a valid `iron-session` cookie.
 3. If unauthenticated → redirect to `/login`.
-4. If authenticated → render admin page, which calls `/api/admin/*` endpoints for CRUD operations against MySQL.
+4. If authenticated → render admin page, which calls `/api/admin/*` endpoints for CRUD operations against PostgreSQL.
 
 **Contact form submission:**
 1. Browser POSTs to `/api/contact`.
@@ -223,7 +223,7 @@ All photo instances use Next.js `<Image>` with `sizes` prop, descriptive `alt` t
 
 ## Data Models
 
-All content is stored in a MySQL database accessed via Prisma ORM. The Prisma schema below defines all tables. Admin credentials are stored in the `AdminUser` table (never in source control).
+All content is stored in a PostgreSQL database accessed via Prisma ORM. The Prisma schema below defines all tables. Admin credentials are stored in the `AdminUser` table (never in source control).
 
 ### Prisma Schema
 
@@ -235,7 +235,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -486,9 +486,9 @@ This singleton pattern prevents connection pool exhaustion during Next.js hot re
 
 ## Content Management Approach
 
-### MySQL-Backed CMS
+### PostgreSQL-Backed CMS
 
-All content is stored in MySQL and accessed via Prisma. The admin panel performs CRUD operations through Next.js API routes. On each write, the API route:
+All content is stored in PostgreSQL and accessed via Prisma. The admin panel performs CRUD operations through Next.js API routes. On each write, the API route:
 
 1. Validates the incoming payload with a `zod` schema.
 2. Executes the appropriate Prisma query (`create`, `update`, or `delete`).
@@ -505,7 +505,7 @@ sequenceDiagram
     participant Browser
     participant NextAPI as Next.js API
     participant Prisma as Prisma ORM
-    participant DB as MySQL Database
+    participant DB as PostgreSQL Database
     participant Cache as Next.js Cache
 
     Admin->>Browser: Fill in form, click Save
@@ -529,7 +529,7 @@ The CV PDF is stored at `/public/cv.pdf` (served as a static file). The admin pa
 
 ```env
 # .env (never committed to source control)
-DATABASE_URL="mysql://user:password@host:3306/professor_website"
+DATABASE_URL="postgresql://user:password@host:5432/professor_website"
 SESSION_SECRET="32-character-minimum-random-string"
 SMTP_HOST="smtp.example.com"
 SMTP_PORT="587"
@@ -538,14 +538,14 @@ SMTP_PASS="smtp-password"
 PROFESSOR_EMAIL="professor@university.edu"
 ```
 
-### Free MySQL Hosting Options
+### Free PostgreSQL Hosting Options
 
 | Provider | Free Tier | Notes |
 |---|---|---|
-| PlanetScale | 5GB storage, 1B row reads/month | MySQL-compatible, serverless driver available |
-| Railway | $5 credit/month | Full MySQL, persistent, easy setup |
-| Aiven | 1 service free | MySQL 8, 1GB storage |
-| Clever Cloud | 256MB MySQL | Good for low-traffic sites |
+| Supabase | 500MB storage, 2 free projects | PostgreSQL, built-in auth and APIs |
+| Railway | $5 credit/month | Full PostgreSQL, persistent, easy setup |
+| Neon | 512MB storage, autoscaling | Serverless PostgreSQL, generous free tier |
+| Vercel Postgres | 256MB storage | Integrated with Vercel deployments |
 
 ---
 
@@ -610,7 +610,7 @@ sequenceDiagram
     participant User
     participant LoginPage
     participant AuthAPI as /api/auth/login
-    participant DB as MySQL (AdminUser)
+    participant DB as PostgreSQL (AdminUser)
     participant Session as iron-session
 
     User->>LoginPage: Submit username + password
@@ -645,7 +645,7 @@ sequenceDiagram
 
 ### Brute-Force Protection
 
-- Failed attempt counter and lockout timestamp stored in the `AdminUser` table in MySQL.
+- Failed attempt counter and lockout timestamp stored in the `AdminUser` table in PostgreSQL.
 - After 5 consecutive failures: `lockedUntil = Date.now() + 15 * 60 * 1000`.
 - Every login attempt checks `lockedUntil` before comparing passwords.
 - Successful login resets `failedAttempts` to 0 and clears `lockedUntil`.
@@ -741,7 +741,7 @@ interface ApiError {
 
 ### Contact Form Failure
 
-If `nodemailer` throws, the API returns `{ error: "Message delivery failed. Please try again or email us directly at {email}.", code: "EMAIL_DELIVERY_FAILED" }`. The client displays this message inline in the form. Note: the contact message is always saved to the `ContactMessage` table in MySQL regardless of email delivery success, so the Admin_User can still read it in the message inbox.
+If `nodemailer` throws, the API returns `{ error: "Message delivery failed. Please try again or email us directly at {email}.", code: "EMAIL_DELIVERY_FAILED" }`. The client displays this message inline in the form. Note: the contact message is always saved to the `ContactMessage` table in PostgreSQL regardless of email delivery success, so the Admin_User can still read it in the message inbox.
 
 ### Admin Write Failure
 
@@ -809,7 +809,7 @@ If a file write fails, the API returns a 500 with `code: "WRITE_FAILED"`. The ad
 
 ### Property 10: Content round-trip integrity
 
-*For any* content object of any supported type (Publication, ResearchProject, Course, Student, Award, Event, Collaborator, Resource, GalleryItem, BlogPost) written to MySQL via the admin API, reading the same record back via Prisma SHALL produce an object that is deeply equal to the one that was written (accounting for database-generated fields such as `createdAt` and `updatedAt`).
+*For any* content object of any supported type (Publication, ResearchProject, Course, Student, Award, Event, Collaborator, Resource, GalleryItem, BlogPost) written to PostgreSQL via the admin API, reading the same record back via Prisma SHALL produce an object that is deeply equal to the one that was written (accounting for database-generated fields such as `createdAt` and `updatedAt`).
 
 **Validates: Requirements 8.2, 12.8**
 

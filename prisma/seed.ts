@@ -1,10 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 
-// Load .env manually for seed script
-import { config } from 'dotenv';
-config();
-
 const prisma = new PrismaClient();
 
 async function main() {

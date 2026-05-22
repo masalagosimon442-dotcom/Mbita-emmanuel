@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -56,6 +56,7 @@ export async function POST(request: NextRequest) {
       data: { ...rest, date: new Date(date), published: rest.published ?? true },
     });
     revalidatePath("/events");
+    revalidateTag("home");
     await logAction("CREATE", "events", event.id, event.name, performedBy);
     return NextResponse.json(event, { status: 201 });
   } catch {
@@ -76,13 +77,14 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { id, date, ...rest } = result.data;
+  const { id, date, published, ...rest } = result.data;
   try {
     const event = await prisma.event.update({
       where: { id },
-      data: { ...rest, ...(date ? { date: new Date(date) } : {}) },
+      data: { ...rest, ...(date ? { date: new Date(date) } : {}), published: published ?? undefined },
     });
     revalidatePath("/events");
+    revalidateTag("home");
     await logAction("UPDATE", "events", event.id, event.name, performedBy);
     return NextResponse.json(event);
   } catch {
@@ -99,6 +101,7 @@ export async function DELETE(request: NextRequest) {
   try {
     const event = await prisma.event.delete({ where: { id } });
     revalidatePath("/events");
+    revalidateTag("home");
     await logAction("DELETE", "events", event.id, event.name, performedBy);
     return NextResponse.json({ success: true });
   } catch {

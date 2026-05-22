@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 import { cookies } from "next/headers";
-import { authenticator } from "otplib";
+import { verify } from "otplib";
 
 export async function POST(req: NextRequest) {
   const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "MFA is not enabled" }, { status: 400 });
     }
 
-    const isValid = authenticator.verify({ token: String(token), secret: user.totpSecret });
-    if (!isValid) return NextResponse.json({ error: "Invalid code" }, { status: 400 });
+    const result = await verify({ token: String(token), secret: user.totpSecret });
+    if (!result.valid) return NextResponse.json({ error: "Invalid code" }, { status: 400 });
 
     await prisma.adminUser.update({
       where: { username: session.username },

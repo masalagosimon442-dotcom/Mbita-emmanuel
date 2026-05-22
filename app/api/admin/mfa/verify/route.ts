@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 import { cookies } from "next/headers";
-import { authenticator } from "otplib";
+import { verify } from "otplib";
 
 export async function POST(req: NextRequest) {
   const session = await getIronSession<SessionData>(await cookies(), sessionOptions);
@@ -16,8 +16,8 @@ export async function POST(req: NextRequest) {
     const user = await prisma.adminUser.findUnique({ where: { username: session.username } });
     if (!user?.totpSecret) return NextResponse.json({ error: "MFA not set up" }, { status: 400 });
 
-    const isValid = authenticator.verify({ token: String(token), secret: user.totpSecret });
-    if (!isValid) return NextResponse.json({ error: "Invalid code. Please try again." }, { status: 400 });
+    const result = await verify({ token: String(token), secret: user.totpSecret });
+    if (!result.valid) return NextResponse.json({ error: "Invalid code. Please try again." }, { status: 400 });
 
     // Enable MFA
     await prisma.adminUser.update({

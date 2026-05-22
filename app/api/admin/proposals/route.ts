@@ -34,10 +34,10 @@ export async function POST(req: NextRequest) {
   if (!session.username) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const body = await req.json();
   const parsed = schema.safeParse(body);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
-  const { deadline, submittedAt, ...rest } = parsed.data;
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { deadline, submittedAt, published, ...rest } = parsed.data;
   const item = await prisma.researchProposal.create({
-    data: { ...rest, deadline: deadline ? new Date(deadline) : undefined, submittedAt: submittedAt ? new Date(submittedAt) : undefined },
+    data: { ...rest, deadline: deadline ? new Date(deadline) : undefined, submittedAt: submittedAt ? new Date(submittedAt) : undefined, published: published ?? undefined },
   });
   await logAction("create", "proposals", item.id, item.title, session.username);
   return NextResponse.json(item, { status: 201 });
@@ -50,11 +50,13 @@ export async function PUT(req: NextRequest) {
   const { id, deadline, submittedAt, ...data } = body;
   if (!id) return NextResponse.json({ error: "ID required" }, { status: 400 });
   const parsed = schema.partial().safeParse(data);
-  if (!parsed.success) return NextResponse.json({ error: parsed.error.errors[0].message }, { status: 400 });
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0].message }, { status: 400 });
+  const { published: pub, ...parsedRest } = parsed.data;
   const item = await prisma.researchProposal.update({
     where: { id },
     data: {
-      ...parsed.data,
+      ...parsedRest,
+      published: pub ?? undefined,
       ...(deadline ? { deadline: new Date(deadline) } : {}),
       ...(submittedAt ? { submittedAt: new Date(submittedAt) } : {}),
     },

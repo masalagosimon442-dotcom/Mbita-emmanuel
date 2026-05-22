@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -62,6 +62,8 @@ export async function POST(request: NextRequest) {
       data: { ...result.data, published: result.data.published ?? true },
     });
     revalidatePath("/publications");
+    revalidateTag("publications");
+    revalidateTag("home");
     await logAction("CREATE", "publications", pub.id, pub.title, performedBy);
     return NextResponse.json(pub, { status: 201 });
   } catch {
@@ -85,11 +87,13 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { id, ...data } = result.data;
+  const { id, published, ...data } = result.data;
 
   try {
-    const pub = await prisma.publication.update({ where: { id }, data });
+    const pub = await prisma.publication.update({ where: { id }, data: { ...data, published: published ?? undefined } });
     revalidatePath("/publications");
+    revalidateTag("publications");
+    revalidateTag("home");
     await logAction("UPDATE", "publications", pub.id, pub.title, performedBy);
     return NextResponse.json(pub);
   } catch {
@@ -109,6 +113,8 @@ export async function DELETE(request: NextRequest) {
   try {
     const pub = await prisma.publication.delete({ where: { id } });
     revalidatePath("/publications");
+    revalidateTag("publications");
+    revalidateTag("home");
     await logAction("DELETE", "publications", pub.id, pub.title, performedBy);
     return NextResponse.json({ success: true });
   } catch {

@@ -51,7 +51,7 @@ const sidebarGroups = [
       { href: "/admin/events", label: "Events", icon: "📅" },
       { href: "/admin/gallery", label: "Gallery", icon: "🖼️" },
       { href: "/admin/testimonials", label: "Testimonials", icon: "💬" },
-      { href: "/admin/announcements", label: "Announcements", icon: "📢" },
+      { href: "/admin/announcements", label: "Services", icon: "🛠️" },
     ],
   },
   {

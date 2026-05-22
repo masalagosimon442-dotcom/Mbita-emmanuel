@@ -459,11 +459,11 @@ export default function AdminProfilePage() {
               </div>
               <div>
                 <label htmlFor="whatsapp" className="block text-sm font-medium text-navy-800 mb-1">WhatsApp Number</label>
-                <input id="whatsapp" type="text" value={(profile as Record<string, unknown>).whatsapp as string ?? ""} onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value } as typeof profile)} placeholder="+1234567890" className={inputClass(false)} />
+                <input id="whatsapp" type="text" value={(profile as unknown as Record<string, unknown>).whatsapp as string ?? ""} onChange={(e) => setProfile({ ...profile, whatsapp: e.target.value } as typeof profile)} placeholder="+1234567890" className={inputClass(false)} />
               </div>
               <div>
                 <label htmlFor="emergencyContact" className="block text-sm font-medium text-navy-800 mb-1">Emergency Contact</label>
-                <input id="emergencyContact" type="text" value={(profile as Record<string, unknown>).emergencyContact as string ?? ""} onChange={(e) => setProfile({ ...profile, emergencyContact: e.target.value } as typeof profile)} placeholder="Name: ... Phone: ..." className={inputClass(false)} />
+                <input id="emergencyContact" type="text" value={(profile as unknown as Record<string, unknown>).emergencyContact as string ?? ""} onChange={(e) => setProfile({ ...profile, emergencyContact: e.target.value } as typeof profile)} placeholder="Name: ... Phone: ..." className={inputClass(false)} />
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="mapEmbedUrl" className="block text-sm font-medium text-navy-800 mb-1">
@@ -472,11 +472,11 @@ export default function AdminProfilePage() {
                     (Get from Google Maps → Share → Embed a map → copy src URL)
                   </span>
                 </label>
-                <input id="mapEmbedUrl" type="url" value={(profile as Record<string, unknown>).mapEmbedUrl as string ?? ""} onChange={(e) => setProfile({ ...profile, mapEmbedUrl: e.target.value } as typeof profile)} placeholder="https://www.google.com/maps/embed?pb=..." className={inputClass(false)} />
+                <input id="mapEmbedUrl" type="url" value={(profile as unknown as Record<string, unknown>).mapEmbedUrl as string ?? ""} onChange={(e) => setProfile({ ...profile, mapEmbedUrl: e.target.value } as typeof profile)} placeholder="https://www.google.com/maps/embed?pb=..." className={inputClass(false)} />
               </div>
               <div className="sm:col-span-2">
                 <label htmlFor="buildingImageUrl" className="block text-sm font-medium text-navy-800 mb-1">Office/Building Image URL</label>
-                <input id="buildingImageUrl" type="url" value={(profile as Record<string, unknown>).buildingImageUrl as string ?? ""} onChange={(e) => setProfile({ ...profile, buildingImageUrl: e.target.value } as typeof profile)} placeholder="https://..." className={inputClass(false)} />
+                <input id="buildingImageUrl" type="url" value={(profile as unknown as Record<string, unknown>).buildingImageUrl as string ?? ""} onChange={(e) => setProfile({ ...profile, buildingImageUrl: e.target.value } as typeof profile)} placeholder="https://..." className={inputClass(false)} />
               </div>
             </div>
 

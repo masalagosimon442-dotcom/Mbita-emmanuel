@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { logAction } from "@/lib/activityLog";
@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
     });
     revalidatePath("/blog");
     revalidatePath("/blog/[slug]");
+    revalidateTag("home");
     await logAction("CREATE", "blog", post.id, post.title, performedBy);
     return NextResponse.json(post, { status: 201 });
   } catch {
@@ -84,7 +85,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "Validation failed.", code: "VALIDATION_ERROR" }, { status: 400 });
   }
 
-  const { id, publishedAt, excerpt, ...rest } = result.data;
+  const { id, publishedAt, excerpt, tags, draft, ...rest } = result.data;
 
   try {
     const post = await prisma.blogPost.update({
@@ -93,10 +94,13 @@ export async function PUT(request: NextRequest) {
         ...rest,
         ...(excerpt !== undefined ? { excerpt: validateExcerpt(excerpt) } : {}),
         ...(publishedAt !== undefined ? { publishedAt: new Date(publishedAt) } : {}),
+        ...(tags !== undefined && tags !== null ? { tags } : {}),
+        ...(draft !== undefined && draft !== null ? { draft } : {}),
       },
     });
     revalidatePath("/blog");
     revalidatePath("/blog/[slug]");
+    revalidateTag("home");
     await logAction("UPDATE", "blog", post.id, post.title, performedBy);
     return NextResponse.json(post);
   } catch {
@@ -114,6 +118,7 @@ export async function DELETE(request: NextRequest) {
     const post = await prisma.blogPost.delete({ where: { id } });
     revalidatePath("/blog");
     revalidatePath("/blog/[slug]");
+    revalidateTag("home");
     await logAction("DELETE", "blog", post.id, post.title, performedBy);
     return NextResponse.json({ success: true });
   } catch {
