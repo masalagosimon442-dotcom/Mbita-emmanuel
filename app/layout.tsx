@@ -37,6 +37,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        <meta name="google-site-verification" content="lKgCZMyDKdyEjfWbqCe0OxM7CAqzv-FPL-jbrleKKzo" />
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             var t = localStorage.getItem('theme');
