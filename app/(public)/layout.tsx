@@ -5,6 +5,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { getPhotoForSlot } from "@/lib/profilePhotos";
 
+export const fetchCache = "force-no-store";
+
 // Lazy-load the chatbot — it's not needed for initial render
 const AIChatbot = dynamic(() => import("@/components/sections/AIChatbot"), {
   ssr: false,

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import StudentCard from "@/components/sections/StudentCard";
 import { separateStudents } from "@/lib/students";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getStudents() {
   try {

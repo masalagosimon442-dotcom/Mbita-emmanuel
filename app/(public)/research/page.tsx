@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import ResearchClient from "@/components/sections/ResearchClient";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getResearchProjects() {
   try {

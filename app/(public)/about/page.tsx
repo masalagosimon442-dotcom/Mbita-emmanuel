@@ -10,7 +10,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { getPhotoForSlot } from "@/lib/profilePhotos";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 interface AcademicProfile {
   label: string;

@@ -4,7 +4,7 @@ import BlogPostCard from "@/components/sections/BlogPostCard";
 import NewsletterForm from "@/components/sections/NewsletterForm";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getBlogPosts() {
   try {

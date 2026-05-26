@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import CollaboratorCard from "@/components/sections/CollaboratorCard";
 import { validateResourceDescription } from "@/lib/resources";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getCollaborators() {
   try {

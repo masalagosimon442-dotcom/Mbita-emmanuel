@@ -4,7 +4,7 @@ import AwardCard from "@/components/sections/AwardCard";
 import { AwardCategory } from "@prisma/client";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 const categoryOrder: AwardCategory[] = ["award", "grant", "fellowship", "honor", "distinction"];
 const categoryHeadings: Record<AwardCategory, string> = {

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import TeachingClient from "@/components/sections/TeachingClient";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getCourses() {
   try {

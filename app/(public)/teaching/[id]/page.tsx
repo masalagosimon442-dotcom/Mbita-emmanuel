@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getCourse(id: string) {
   try {

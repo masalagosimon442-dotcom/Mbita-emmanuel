@@ -4,7 +4,7 @@ import { unstable_cache } from "next/cache";
 import PublicationsClient from "@/components/sections/PublicationsClient";
 import Link from "next/link";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 const getPublications = unstable_cache(
   async () => {
@@ -18,7 +18,7 @@ const getPublications = unstable_cache(
     }
   },
   ["publications-list"],
-  { revalidate: 60, tags: ["publications"] }
+  { revalidate: 10, tags: ["publications"] }
 );
 
 const getProfile = unstable_cache(
@@ -32,7 +32,7 @@ const getProfile = unstable_cache(
     }
   },
   ["publications-profile"],
-  { revalidate: 60, tags: ["profile"] }
+  { revalidate: 10, tags: ["profile"] }
 );
 
 export async function generateMetadata(): Promise<Metadata> {
