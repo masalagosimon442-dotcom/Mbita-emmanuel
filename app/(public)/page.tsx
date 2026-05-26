@@ -15,7 +15,7 @@ interface AcademicProfile {
   url: string;
 }
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 const getHomeData = unstable_cache(
   async () => {
@@ -76,7 +76,7 @@ const getHomeData = unstable_cache(
     }
   },
   ["home-data"],
-  { revalidate: 60, tags: ["home", "profile", "settings"] }
+  { revalidate: 10, tags: ["home", "profile", "settings"] }
 );
 
 export async function generateMetadata(): Promise<Metadata> {

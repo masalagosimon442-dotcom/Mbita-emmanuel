@@ -7,7 +7,7 @@ import { getIronSession } from "iron-session";
 import { sessionOptions, SessionData } from "@/lib/session";
 
 const settingsSchema = z.object({
-  siteTitle: z.string().optional().default(""),
+  siteTitle: z.string().optional(),
   tagline: z.string().optional(),
   footerText: z.string().optional(),
   contactEmail: z.string().email("Valid email is required").optional().or(z.literal("")),
@@ -73,38 +73,62 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
+    // Build update data — only include fields that were actually sent
+    const updateData: Record<string, unknown> = {};
+    const data = result.data;
+
+    if (data.siteTitle !== undefined) updateData.siteTitle = data.siteTitle;
+    if (data.tagline !== undefined) updateData.tagline = data.tagline;
+    if (data.footerText !== undefined) updateData.footerText = data.footerText;
+    if (data.contactEmail !== undefined) updateData.contactEmail = data.contactEmail;
+    if (data.maintenanceMode !== undefined) updateData.maintenanceMode = data.maintenanceMode;
+    if (data.maintenanceMsg !== undefined) updateData.maintenanceMsg = data.maintenanceMsg;
+    if (data.socialLinks !== undefined) updateData.socialLinks = data.socialLinks;
+    if (data.hiddenSections !== undefined) updateData.hiddenSections = data.hiddenSections;
+    if (data.heroVideoUrl !== undefined) updateData.heroVideoUrl = data.heroVideoUrl;
+    if (data.heroImageUrl !== undefined) updateData.heroImageUrl = data.heroImageUrl;
+    if (data.heroTitle !== undefined) updateData.heroTitle = data.heroTitle;
+    if (data.heroSubtitle !== undefined) updateData.heroSubtitle = data.heroSubtitle;
+    if (data.heroCTAText !== undefined) updateData.heroCTAText = data.heroCTAText;
+    if (data.heroCTALink !== undefined) updateData.heroCTALink = data.heroCTALink;
+    if (data.showAnnouncements !== undefined) updateData.showAnnouncements = data.showAnnouncements;
+    if (data.showStats !== undefined) updateData.showStats = data.showStats;
+    if (data.showNewsSlider !== undefined) updateData.showNewsSlider = data.showNewsSlider;
+    if (data.showUpcomingEvents !== undefined) updateData.showUpcomingEvents = data.showUpcomingEvents;
+    if (data.showPublications !== undefined) updateData.showPublications = data.showPublications;
+    if (data.showTestimonials !== undefined) updateData.showTestimonials = data.showTestimonials;
+    if (data.showResearchHighlights !== undefined) updateData.showResearchHighlights = data.showResearchHighlights;
+    if (data.showAchievements !== undefined) updateData.showAchievements = data.showAchievements;
+    if (data.showQuickLinks !== undefined) updateData.showQuickLinks = data.showQuickLinks;
+
     const settings = await prisma.siteSettings.upsert({
       where: { id: 1 },
-      update: {
-        ...result.data,
-        socialLinks: result.data.socialLinks ?? [],
-        hiddenSections: result.data.hiddenSections ?? [],
-        maintenanceMode: result.data.maintenanceMode ?? false,
-      },
+      update: updateData,
       create: {
         id: 1,
-        siteTitle: result.data.siteTitle,
-        tagline: result.data.tagline,
-        footerText: result.data.footerText ?? "",
-        contactEmail: result.data.contactEmail ?? "",
-        socialLinks: result.data.socialLinks ?? [],
-        hiddenSections: result.data.hiddenSections ?? [],
-        maintenanceMode: result.data.maintenanceMode ?? false,
-        heroVideoUrl: result.data.heroVideoUrl,
-        heroImageUrl: result.data.heroImageUrl,
-        heroTitle: result.data.heroTitle,
-        heroSubtitle: result.data.heroSubtitle,
-        heroCTAText: result.data.heroCTAText,
-        heroCTALink: result.data.heroCTALink,
-        showAnnouncements: result.data.showAnnouncements ?? true,
-        showStats: result.data.showStats ?? true,
-        showNewsSlider: result.data.showNewsSlider ?? true,
-        showUpcomingEvents: result.data.showUpcomingEvents ?? true,
-        showPublications: result.data.showPublications ?? true,
-        showTestimonials: result.data.showTestimonials ?? true,
-        showResearchHighlights: result.data.showResearchHighlights ?? true,
-        showAchievements: result.data.showAchievements ?? true,
-        showQuickLinks: result.data.showQuickLinks ?? true,
+        siteTitle: data.siteTitle || "",
+        tagline: data.tagline ?? "",
+        footerText: data.footerText ?? "",
+        contactEmail: data.contactEmail ?? "",
+        socialLinks: data.socialLinks ?? [],
+        hiddenSections: data.hiddenSections ?? [],
+        maintenanceMode: data.maintenanceMode ?? false,
+        maintenanceMsg: data.maintenanceMsg ?? "",
+        heroVideoUrl: data.heroVideoUrl ?? "",
+        heroImageUrl: data.heroImageUrl ?? "",
+        heroTitle: data.heroTitle ?? "",
+        heroSubtitle: data.heroSubtitle ?? "",
+        heroCTAText: data.heroCTAText ?? "",
+        heroCTALink: data.heroCTALink ?? "",
+        showAnnouncements: data.showAnnouncements ?? true,
+        showStats: data.showStats ?? true,
+        showNewsSlider: data.showNewsSlider ?? true,
+        showUpcomingEvents: data.showUpcomingEvents ?? true,
+        showPublications: data.showPublications ?? true,
+        showTestimonials: data.showTestimonials ?? true,
+        showResearchHighlights: data.showResearchHighlights ?? true,
+        showAchievements: data.showAchievements ?? true,
+        showQuickLinks: data.showQuickLinks ?? true,
       },
     });
 
@@ -114,7 +138,8 @@ export async function PUT(request: NextRequest) {
     await logAction("UPDATE", "settings", "1", "Site Settings", performedBy);
 
     return NextResponse.json(settings);
-  } catch {
+  } catch (err) {
+    console.error("Settings save error:", err);
     return NextResponse.json({ error: "Failed to update settings.", code: "DB_ERROR" }, { status: 500 });
   }
 }

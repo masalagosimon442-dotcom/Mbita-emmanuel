@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     template: "Mbita Deogratias | %s",
   },
   description: "Academic personal website",
+  verification: {
+    google: "lKgCZMyDKdyEjfWbqCe0OxM7CAqzv-FPL-jbrleKKzo",
+  },
 };
 
 export const viewport = {
@@ -37,7 +40,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="google-site-verification" content="lKgCZMyDKdyEjfWbqCe0OxM7CAqzv-FPL-jbrleKKzo" />
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
             var t = localStorage.getItem('theme');

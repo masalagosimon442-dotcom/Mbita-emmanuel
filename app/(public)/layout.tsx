@@ -30,7 +30,7 @@ const getProfile = unstable_cache(
     }
   },
   ["layout-profile"],
-  { revalidate: 60, tags: ["profile"] }
+  { revalidate: 10, tags: ["profile"] }
 );
 
 const getSiteSettings = unstable_cache(
@@ -44,7 +44,7 @@ const getSiteSettings = unstable_cache(
     }
   },
   ["layout-settings"],
-  { revalidate: 60, tags: ["settings"] }
+  { revalidate: 10, tags: ["settings"] }
 );
 
 export default async function PublicLayout({
