@@ -42,10 +42,33 @@ export async function GET() {
   try {
     const settings = await prisma.siteSettings.findFirst();
     if (!settings) {
-      return NextResponse.json(
-        { error: "Site settings not found.", code: "NOT_FOUND" },
-        { status: 404 }
-      );
+      // Return defaults so the admin page can load and save properly
+      return NextResponse.json({
+        id: 1,
+        siteTitle: "",
+        tagline: "",
+        footerText: "",
+        contactEmail: "",
+        maintenanceMode: false,
+        maintenanceMsg: "",
+        socialLinks: [],
+        hiddenSections: [],
+        heroVideoUrl: "",
+        heroImageUrl: "",
+        heroTitle: "",
+        heroSubtitle: "",
+        heroCTAText: "",
+        heroCTALink: "",
+        showAnnouncements: true,
+        showStats: true,
+        showNewsSlider: true,
+        showUpcomingEvents: true,
+        showPublications: true,
+        showTestimonials: true,
+        showResearchHighlights: true,
+        showAchievements: true,
+        showQuickLinks: true,
+      });
     }
     return NextResponse.json(settings);
   } catch {
