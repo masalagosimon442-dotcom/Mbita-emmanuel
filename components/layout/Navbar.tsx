@@ -30,9 +30,15 @@ const dropdownGroups = [
     icon: "🎓",
     items: [
       { href: "/research", label: "Research & Projects", key: "research", icon: "🔬", desc: "Current and past research" },
+      { href: "/research/repository", label: "Research Repository", key: "research-repository", icon: "📚", desc: "Browse research archive" },
+      { href: "/research/proposals", label: "Research Proposals", key: "research-proposals", icon: "📝", desc: "Funding proposals" },
+      { href: "/research/datasets", label: "Datasets", key: "datasets", icon: "💾", desc: "Open research data" },
+      { href: "/research/presentations", label: "Presentations", key: "presentations", icon: "🎤", desc: "Conference talks & slides" },
       { href: "/publications", label: "Publications", key: "publications", icon: "📄", desc: "Papers, books & articles" },
       { href: "/cv", label: "CV & Achievements", key: "cv", icon: "🏆", desc: "Awards, grants & honours" },
-      { href: "/collaborations", label: "Collaborations & Resources", key: "collaborations", icon: "🤝", desc: "Partners & resources" },
+      { href: "/collaborations", label: "Collaborations", key: "collaborations", icon: "🤝", desc: "Partners & resources" },
+      { href: "/research-network", label: "Research Network", key: "research-network", icon: "🌐", desc: "Academic connections" },
+      { href: "/peer-review", label: "Peer Review", key: "peer-review", icon: "👁️", desc: "Review activities" },
     ],
   },
   {
@@ -42,6 +48,34 @@ const dropdownGroups = [
     items: [
       { href: "/teaching", label: "Teaching & Courses", key: "teaching", icon: "🎓", desc: "Active & archived courses" },
       { href: "/students", label: "Students & Supervision", key: "students", icon: "👩‍🎓", desc: "Current students & alumni" },
+      { href: "/student-portal", label: "Student Portal", key: "student-portal", icon: "🎒", desc: "Login & registration" },
+      { href: "/certificates", label: "Certificates", key: "certificates", icon: "🏅", desc: "Digital certificates" },
+      { href: "/gamification", label: "Achievements & Badges", key: "gamification", icon: "🎮", desc: "Student achievements" },
+      { href: "/scheduling", label: "Office Hours", key: "scheduling", icon: "📅", desc: "Book appointments" },
+    ],
+  },
+  {
+    label: "Resources",
+    key: "resources",
+    icon: "🛠️",
+    items: [
+      { href: "/video-library", label: "Video Library", key: "video-library", icon: "🎥", desc: "Educational videos" },
+      { href: "/virtual-lab", label: "Virtual Lab", key: "virtual-lab", icon: "🧪", desc: "Online experiments" },
+      { href: "/ai-assistant", label: "AI Assistant", key: "ai-assistant", icon: "🤖", desc: "Get instant help" },
+      { href: "/marketplace", label: "Marketplace", key: "marketplace", icon: "🛒", desc: "Learning materials" },
+      { href: "/integrations", label: "Integrations", key: "integrations", icon: "🔗", desc: "Connected tools" },
+      { href: "/features", label: "Platform Features", key: "features", icon: "⚡", desc: "All capabilities" },
+    ],
+  },
+  {
+    label: "Community",
+    key: "community",
+    icon: "👥",
+    items: [
+      { href: "/alumni", label: "Alumni Network", key: "alumni", icon: "🎓", desc: "Connect with alumni" },
+      { href: "/collaborations/team", label: "Team Collaboration", key: "team-collaboration", icon: "👨‍💼", desc: "Work together" },
+      { href: "/live-polling", label: "Live Polls", key: "live-polling", icon: "📊", desc: "Interactive voting" },
+      { href: "/newsletter", label: "Newsletter", key: "newsletter", icon: "📧", desc: "Subscribe to updates" },
     ],
   },
   {
@@ -52,6 +86,25 @@ const dropdownGroups = [
       { href: "/blog", label: "Blog / News & Events", key: "blog", icon: "✍️", desc: "Latest posts & news" },
       { href: "/events", label: "Events", key: "events", icon: "📅", desc: "Upcoming & past events" },
       { href: "/gallery", label: "Gallery", key: "gallery", icon: "🖼️", desc: "Photos & media" },
+    ],
+  },
+  {
+    label: "Analytics",
+    key: "analytics-group",
+    icon: "📊",
+    items: [
+      { href: "/impact-dashboard", label: "Impact Dashboard", key: "impact-dashboard", icon: "📈", desc: "Research impact metrics" },
+      { href: "/analytics", label: "Analytics", key: "analytics", icon: "📉", desc: "Detailed statistics" },
+      { href: "/funding-tracker", label: "Funding Tracker", key: "funding-tracker", icon: "💰", desc: "Grant management" },
+    ],
+  },
+  {
+    label: "More",
+    key: "more",
+    icon: "⚙️",
+    items: [
+      { href: "/accessibility", label: "Accessibility", key: "accessibility", icon: "♿", desc: "Accessibility tools" },
+      { href: "/mobile-app", label: "Mobile App", key: "mobile-app", icon: "📱", desc: "Download our app" },
     ],
   },
 ];

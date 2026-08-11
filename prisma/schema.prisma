@@ -8,62 +8,108 @@ datasource db {
 }
 
 model Profile {
-  id               Int      @id @default(1)
-  fullName         String
-  title            String
-  department       String
-  institution      String
-  email            String
-  officeLocation   String
-  officeHours      String
-  bio              String
-  photoUrl         String   @default("")
-  cvUrl            String   @default("")
+  id                  Int       @id @default(1)
+  fullName            String
+  title               String
+  department          String
+  institution         String
+  email               String
+  officeLocation      String
+  officeHours         String
+  bio                 String
+  photoUrl            String    @default("")
+  cvUrl               String    @default("")
   // ── Per-location photos (each can be uploaded separately) ──
-  navbarPhotoUrl   String   @default("")   // Navbar top bar (40px circle)
-  heroPhotoUrl     String   @default("")   // Homepage hero (220px circle)
-  aboutPhotoUrl    String   @default("")   // About page (200px circle)
-  contactPhotoUrl  String   @default("")   // Contact page (150px circle)
-  footerPhotoUrl   String   @default("")   // Footer (48px circle)
-  adminPhotoUrl    String   @default("")   // Admin panel sidebar & dropdown
-  academicProfiles Json
+  navbarPhotoUrl      String    @default("") // Navbar top bar (40px circle)
+  heroPhotoUrl        String    @default("") // Homepage hero (220px circle)
+  aboutPhotoUrl       String    @default("") // About page (200px circle)
+  contactPhotoUrl     String    @default("") // Contact page (150px circle)
+  footerPhotoUrl      String    @default("") // Footer (48px circle)
+  adminPhotoUrl       String    @default("") // Admin panel sidebar & dropdown
+  academicProfiles    Json
   // About page enhancements
-  vision           String?
-  mission          String?
-  skills           Json?
-  languages        Json?
-  education        Json?
-  workExperience   Json?
-  certifications   Json?
-  memberships      Json?
-  videoIntroUrl    String?
+  vision              String?
+  mission             String?
+  skills              Json?
+  languages           Json?
+  education           Json?
+  workExperience      Json?
+  certifications      Json?
+  memberships         Json?
+  videoIntroUrl       String?
   // Contact enhancements
-  whatsapp         String?
-  mapEmbedUrl      String?
-  buildingImageUrl String?
-  faq              Json?
+  whatsapp            String?
+  mapEmbedUrl         String?
+  buildingImageUrl    String?
+  faq                 Json?
   // New fields
-  leadershipPositions Json?   // Leadership positions
-  mediaAppearances    Json?   // Media appearances/press
+  leadershipPositions Json? // Leadership positions
+  mediaAppearances    Json? // Media appearances/press
   emergencyContact    String? // Emergency contact info
-  updatedAt        DateTime @updatedAt
+  // Auto-sync settings
+  autoSyncEnabled     Boolean   @default(true) // Enable/disable auto-sync
+  lastSyncAt          DateTime? // Last sync timestamp
+  updatedAt           DateTime  @updatedAt
+}
+
+// Connected Academic Accounts for Auto-Sync
+model ConnectedAccount {
+  id           String    @id @default(cuid())
+  platform     String // google-scholar, orcid, researchgate, github, etc.
+  accountId    String // External account ID or username
+  accessToken  String? // OAuth token (encrypted)
+  refreshToken String? // OAuth refresh token (encrypted)
+  apiKey       String? // API key if applicable
+  isActive     Boolean   @default(true)
+  lastSyncedAt DateTime?
+  syncStatus   String    @default("pending") // pending, syncing, success, error
+  syncError    String? // Error message if sync failed
+  metadata     Json? // Platform-specific settings
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([platform, accountId])
+  @@index([platform, isActive])
+}
+
+// Auto-Synced Content Cache
+model SyncedContent {
+  id            String    @id @default(cuid())
+  platform      String // Source platform
+  externalId    String // ID from external platform
+  contentType   String // publication, research, course, etc.
+  title         String
+  content       String    @db.Text
+  metadata      Json // All extracted data
+  authors       String[] // Array of authors
+  publishedDate DateTime?
+  citations     Int       @default(0)
+  url           String?
+  importedToDb  Boolean   @default(false) // Whether imported to main tables
+  lastFetchedAt DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([platform, externalId])
+  @@index([platform, contentType])
+  @@index([importedToDb])
 }
 
 model Publication {
-  id          String          @id @default(uuid())
-  title       String
-  authors     Json
-  venue       String
-  year        Int
-  type        PublicationType
-  doi         String?
-  url         String?
-  abstract    String?
-  pdfUrl      String?
-  coverImage  String?
-  published   Boolean         @default(true)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id         String          @id @default(uuid())
+  title      String
+  authors    Json
+  venue      String
+  year       Int
+  type       PublicationType
+  doi        String?
+  url        String?
+  abstract   String?
+  pdfUrl     String?
+  coverImage String?
+  published  Boolean         @default(true)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
 }
 
 enum PublicationType {
@@ -177,48 +223,48 @@ enum AwardCategory {
 }
 
 model BlogPost {
-  id           String   @id @default(uuid())
-  title        String
-  slug         String   @unique
-  publishedAt  DateTime
-  excerpt      String
-  content      String
-  tags         Json?
+  id            String   @id @default(uuid())
+  title         String
+  slug          String   @unique
+  publishedAt   DateTime
+  excerpt       String
+  content       String
+  tags          Json?
   featuredImage String?
-  draft        Boolean  @default(false)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  draft         Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model NewsletterSubscriber {
-  id          String   @id @default(uuid())
-  email       String   @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
   subscribedAt DateTime @default(now())
 }
 
 model BlogComment {
-  id          String   @id @default(uuid())
-  postId      String
-  name        String
-  email       String
-  content     String
-  approved    Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  postId    String
+  name      String
+  email     String
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Event {
-  id               String   @id @default(uuid())
-  name             String
-  date             DateTime
-  location         String
-  description      String
-  externalUrl      String?
-  posterImage      String?
-  registrationUrl  String?
-  streamUrl        String?
-  published        Boolean  @default(true)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id              String   @id @default(uuid())
+  name            String
+  date            DateTime
+  location        String
+  description     String
+  externalUrl     String?
+  posterImage     String?
+  registrationUrl String?
+  streamUrl       String?
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Collaborator {
@@ -274,32 +320,32 @@ model AdminUser {
 }
 
 model SiteSettings {
-  id              Int      @id @default(1)
-  siteTitle       String
-  tagline         String?
-  footerText      String
-  contactEmail    String
-  maintenanceMode Boolean  @default(false)
-  maintenanceMsg  String?
-  socialLinks     Json
-  hiddenSections  Json
-  heroVideoUrl    String?
-  heroImageUrl    String?
+  id                     Int      @id @default(1)
+  siteTitle              String
+  tagline                String?
+  footerText             String
+  contactEmail           String
+  maintenanceMode        Boolean  @default(false)
+  maintenanceMsg         String?
+  socialLinks            Json
+  hiddenSections         Json
+  heroVideoUrl           String?
+  heroImageUrl           String?
   // ── Home page section controls ──
-  showAnnouncements   Boolean @default(true)
-  showStats           Boolean @default(true)
-  showNewsSlider      Boolean @default(true)
-  showUpcomingEvents  Boolean @default(true)
-  showPublications    Boolean @default(true)
-  showTestimonials    Boolean @default(true)
-  showResearchHighlights Boolean @default(true)
-  showAchievements    Boolean @default(true)
-  showQuickLinks      Boolean @default(true)
-  heroTitle           String?
-  heroSubtitle        String?
-  heroCTAText         String?
-  heroCTALink         String?
-  updatedAt       DateTime @updatedAt
+  showAnnouncements      Boolean  @default(true)
+  showStats              Boolean  @default(true)
+  showNewsSlider         Boolean  @default(true)
+  showUpcomingEvents     Boolean  @default(true)
+  showPublications       Boolean  @default(true)
+  showTestimonials       Boolean  @default(true)
+  showResearchHighlights Boolean  @default(true)
+  showAchievements       Boolean  @default(true)
+  showQuickLinks         Boolean  @default(true)
+  heroTitle              String?
+  heroSubtitle           String?
+  heroCTAText            String?
+  heroCTALink            String?
+  updatedAt              DateTime @updatedAt
 }
 
 model ContactMessage {
@@ -343,40 +389,40 @@ model Announcement {
 }
 
 model AppointmentRequest {
-  id          String   @id @default(uuid())
-  name        String
-  email       String
-  date        DateTime
-  timeSlot    String
-  purpose     String
-  status      String   @default("pending")
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  date      DateTime
+  timeSlot  String
+  purpose   String
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
 }
 
 // ── LMS MODELS ──
 
 model CourseMaterial {
-  id          String   @id @default(uuid())
-  courseId    String
-  title       String
-  type        String   // lecture_note, video, assignment, quiz, other
-  url         String?
-  content     String?
-  order       Int      @default(0)
-  published   Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(uuid())
+  courseId  String
+  title     String
+  type      String // lecture_note, video, assignment, quiz, other
+  url       String?
+  content   String?
+  order     Int      @default(0)
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model StudentMilestone {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   studentId   String
   title       String
   description String?
   dueDate     DateTime?
-  completed   Boolean  @default(false)
+  completed   Boolean   @default(false)
   completedAt DateTime?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 }
 
 model CollaborationRequest {
@@ -400,7 +446,7 @@ model PageView {
 model ChatMessage {
   id        String   @id @default(uuid())
   sessionId String
-  role      String   // user | assistant
+  role      String // user | assistant
   content   String
   createdAt DateTime @default(now())
 }
@@ -413,7 +459,7 @@ model ResearchDataset {
   description String
   url         String?
   fileUrl     String?
-  format      String?  // CSV, JSON, etc.
+  format      String? // CSV, JSON, etc.
   size        String?
   published   Boolean  @default(true)
   createdAt   DateTime @default(now())
@@ -436,27 +482,27 @@ model ResearchPresentation {
 model StudentFeedback {
   id        String   @id @default(uuid())
   courseId  String
-  rating    Int      // 1-5
+  rating    Int // 1-5
   comment   String?
   anonymous Boolean  @default(true)
   createdAt DateTime @default(now())
 }
 
 model CourseAttendance {
-  id        String   @id @default(uuid())
-  courseId  String
+  id          String   @id @default(uuid())
+  courseId    String
   studentName String
-  date      DateTime
-  present   Boolean  @default(true)
-  notes     String?
-  createdAt DateTime @default(now())
+  date        DateTime
+  present     Boolean  @default(true)
+  notes       String?
+  createdAt   DateTime @default(now())
 }
 
 model CourseGrade {
   id          String   @id @default(uuid())
   courseId    String
   studentName String
-  assessment  String   // midterm, final, assignment, etc.
+  assessment  String // midterm, final, assignment, etc.
   score       Float
   maxScore    Float    @default(100)
   notes       String?
@@ -483,13 +529,13 @@ model BackupLog {
 }
 
 model SecurityLog {
-  id          String   @id @default(uuid())
-  event       String   // login_success, login_failed, locked, etc.
-  username    String?
-  ipAddress   String?
-  userAgent   String?
-  details     String?
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  event     String // login_success, login_failed, locked, etc.
+  username  String?
+  ipAddress String?
+  userAgent String?
+  details   String?
+  createdAt DateTime @default(now())
 }
 
 model ResourceAnalytics {
@@ -503,18 +549,18 @@ model ResourceAnalytics {
 // ── NEW MODELS ──
 
 model ResearchProposal {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   title       String
   description String
-  status      String   @default("draft") // draft, submitted, approved, rejected
+  status      String    @default("draft") // draft, submitted, approved, rejected
   fundingBody String?
   amount      String?
   deadline    DateTime?
   submittedAt DateTime?
   notes       String?
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  published   Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model ResearchRepository {
@@ -557,7 +603,7 @@ model CourseRegistration {
 model CourseFeedback {
   id        String   @id @default(uuid())
   courseId  String
-  rating    Int      // 1-5
+  rating    Int // 1-5
   comment   String?
   anonymous Boolean  @default(true)
   createdAt DateTime @default(now())
@@ -578,45 +624,44 @@ model TeamMember {
 }
 
 model WebhookIntegration {
-  id        String   @id @default(uuid())
-  name      String
-  url       String
-  events    Json     // array of event types to trigger on
-  secret    String?
-  active    Boolean  @default(true)
+  id         String    @id @default(uuid())
+  name       String
+  url        String
+  events     Json // array of event types to trigger on
+  secret     String?
+  active     Boolean   @default(true)
   lastCalled DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
-
 
 // ═══════════════════════════════════════════════════════════════
 // PHASE 1: STUDENT PORTAL & AUTHENTICATION
 // ═══════════════════════════════════════════════════════════════
 
 model StudentUser {
-  id              String    @id @default(uuid())
-  email           String    @unique
-  passwordHash    String
-  firstName       String
-  lastName        String
-  studentId       String    @unique
-  photoUrl        String?
-  enrollmentYear  Int
-  program         String?
-  active          Boolean   @default(true)
-  lastLogin       DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             String    @id @default(uuid())
+  email          String    @unique
+  passwordHash   String
+  firstName      String
+  lastName       String
+  studentId      String    @unique
+  photoUrl       String?
+  enrollmentYear Int
+  program        String?
+  active         Boolean   @default(true)
+  lastLogin      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model StudentEnrollment {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   studentId   String
   courseId    String
-  status      String   @default("active") // active, completed, dropped
+  status      String    @default("active") // active, completed, dropped
   grade       String?
-  enrolledAt  DateTime @default(now())
+  enrolledAt  DateTime  @default(now())
   completedAt DateTime?
 }
 
@@ -647,13 +692,13 @@ model AssignmentSubmission {
 }
 
 model StudentMessage {
-  id          String   @id @default(uuid())
-  fromId      String   // studentId or 'admin'
-  toId        String   // studentId or 'admin'
-  subject     String
-  content     String
-  read        Boolean  @default(false)
-  sentAt      DateTime @default(now())
+  id      String   @id @default(uuid())
+  fromId  String // studentId or 'admin'
+  toId    String // studentId or 'admin'
+  subject String
+  content String
+  read    Boolean  @default(false)
+  sentAt  DateTime @default(now())
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -661,46 +706,46 @@ model StudentMessage {
 // ═══════════════════════════════════════════════════════════════
 
 model Researcher {
-  id              String   @id @default(uuid())
-  userId          String?  @unique
-  name            String
-  email           String   @unique
-  institution     String
-  department      String?
-  researchAreas   Json     // array of research interests
-  h_index         Int?
-  citations       Int?
-  publications    Int?
-  profileUrl      String?
-  photoUrl        String?
-  bio             String?
-  verified        Boolean  @default(false)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(uuid())
+  userId        String?  @unique
+  name          String
+  email         String   @unique
+  institution   String
+  department    String?
+  researchAreas Json // array of research interests
+  h_index       Int?
+  citations     Int?
+  publications  Int?
+  profileUrl    String?
+  photoUrl      String?
+  bio           String?
+  verified      Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model CollaborationProposal {
-  id            String   @id @default(uuid())
+  id            String    @id @default(uuid())
   proposerId    String
   title         String
   description   String
   researchArea  String
-  fundingNeeded Boolean  @default(false)
+  fundingNeeded Boolean   @default(false)
   estimatedCost String?
   duration      String?
-  status        String   @default("open") // open, in_progress, completed, closed
+  status        String    @default("open") // open, in_progress, completed, closed
   deadline      DateTime?
-  interestedIds Json     // array of researcher IDs
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  interestedIds Json // array of researcher IDs
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 model ResearchMatch {
   id            String   @id @default(uuid())
   researcher1Id String
   researcher2Id String
-  matchScore    Float    // 0-100
-  commonAreas   Json     // array of common interests
+  matchScore    Float // 0-100
+  commonAreas   Json // array of common interests
   status        String   @default("pending") // pending, accepted, rejected
   createdAt     DateTime @default(now())
 }
@@ -753,35 +798,34 @@ model PublicationDownload {
 
 model AvailabilitySlot {
   id        String   @id @default(uuid())
-  dayOfWeek Int      // 0-6 (Sunday-Saturday)
-  startTime String   // HH:MM format
-  endTime   String   // HH:MM format
+  dayOfWeek Int // 0-6 (Sunday-Saturday)
+  startTime String // HH:MM format
+  endTime   String // HH:MM format
   active    Boolean  @default(true)
   createdAt DateTime @default(now())
 }
 
-
 model Appointment {
-  id          String   @id @default(uuid())
-  studentId   String?
-  guestName   String?
-  guestEmail  String?
-  date        DateTime
-  startTime   String
-  endTime     String
-  purpose     String
-  status      String   @default("pending") // pending, confirmed, cancelled, completed
-  zoomUrl     String?
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(uuid())
+  studentId  String?
+  guestName  String?
+  guestEmail String?
+  date       DateTime
+  startTime  String
+  endTime    String
+  purpose    String
+  status     String   @default("pending") // pending, confirmed, cancelled, completed
+  zoomUrl    String?
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model AppointmentReminder {
   id            String   @id @default(uuid())
   appointmentId String
   sentAt        DateTime @default(now())
-  type          String   // email, sms
+  type          String // email, sms
   sent          Boolean  @default(false)
 }
 
@@ -790,29 +834,29 @@ model AppointmentReminder {
 // ═══════════════════════════════════════════════════════════════
 
 model VideoLecture {
-  id          String   @id @default(uuid())
-  courseId    String
-  title       String
-  description String?
-  videoUrl    String
-  duration    Int?     // in seconds
-  transcript  String?
+  id           String   @id @default(uuid())
+  courseId     String
+  title        String
+  description  String?
+  videoUrl     String
+  duration     Int? // in seconds
+  transcript   String?
   thumbnailUrl String?
-  chapters    Json?    // array of {time, title}
-  published   Boolean  @default(false)
-  views       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  chapters     Json? // array of {time, title}
+  published    Boolean  @default(false)
+  views        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model VideoProgress {
-  id        String   @id @default(uuid())
-  videoId   String
-  studentId String
-  progress  Float    @default(0) // 0-100
-  lastPosition Int   @default(0) // seconds
-  completed Boolean  @default(false)
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  videoId      String
+  studentId    String
+  progress     Float    @default(0) // 0-100
+  lastPosition Int      @default(0) // seconds
+  completed    Boolean  @default(false)
+  updatedAt    DateTime @updatedAt
 }
 
 model VideoComment {
@@ -820,7 +864,7 @@ model VideoComment {
   videoId   String
   studentId String
   content   String
-  timestamp Int?     // position in video (seconds)
+  timestamp Int? // position in video (seconds)
   createdAt DateTime @default(now())
 }
 
@@ -829,7 +873,7 @@ model VideoPlaylist {
   title       String
   description String?
   courseId    String?
-  videoIds    Json     // array of video IDs
+  videoIds    Json // array of video IDs
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -840,34 +884,34 @@ model VideoPlaylist {
 // ═══════════════════════════════════════════════════════════════
 
 model PeerReview {
-  id            String   @id @default(uuid())
-  submissionId  String
-  reviewerId    String
-  rubric        Json     // {criteria: score}
-  comments      String?
-  strengths     String?
-  improvements  String?
-  score         Float?
-  anonymous     Boolean  @default(true)
-  submitted     Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  submittedAt   DateTime?
+  id           String    @id @default(uuid())
+  submissionId String
+  reviewerId   String
+  rubric       Json // {criteria: score}
+  comments     String?
+  strengths    String?
+  improvements String?
+  score        Float?
+  anonymous    Boolean   @default(true)
+  submitted    Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  submittedAt  DateTime?
 }
 
 model ReviewRubric {
-  id          String   @id @default(uuid())
+  id           String   @id @default(uuid())
   assignmentId String
-  criteria    Json     // array of {name, maxScore, description}
-  createdAt   DateTime @default(now())
+  criteria     Json // array of {name, maxScore, description}
+  createdAt    DateTime @default(now())
 }
 
 model PlagiarismCheck {
   id           String   @id @default(uuid())
   submissionId String
-  score        Float    // 0-100
-  matches      Json?    // array of matches
+  score        Float // 0-100
+  matches      Json? // array of matches
   checkedAt    DateTime @default(now())
-  service      String?  // turnitin, copyscape, etc
+  service      String? // turnitin, copyscape, etc
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -875,22 +919,22 @@ model PlagiarismCheck {
 // ═══════════════════════════════════════════════════════════════
 
 model Alumni {
-  id                String   @id @default(uuid())
-  studentUserId     String?  @unique
-  name              String
-  email             String   @unique
-  graduationYear    Int
-  degree            String
-  currentCompany    String?
-  currentPosition   String?
-  location          String?
-  photoUrl          String?
-  linkedin          String?
-  achievements      Json?
-  willingToMentor   Boolean  @default(false)
-  published         Boolean  @default(true)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id              String   @id @default(uuid())
+  studentUserId   String?  @unique
+  name            String
+  email           String   @unique
+  graduationYear  Int
+  degree          String
+  currentCompany  String?
+  currentPosition String?
+  location        String?
+  photoUrl        String?
+  linkedin        String?
+  achievements    Json?
+  willingToMentor Boolean  @default(false)
+  published       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model AlumniStory {
@@ -906,25 +950,25 @@ model AlumniStory {
 }
 
 model JobPosting {
-  id          String   @id @default(uuid())
-  postedBy    String   // alumniId
-  title       String
-  company     String
-  location    String
-  type        String   // full-time, part-time, internship
-  description String
+  id           String    @id @default(uuid())
+  postedBy     String // alumniId
+  title        String
+  company      String
+  location     String
+  type         String // full-time, part-time, internship
+  description  String
   requirements String?
-  salary      String?
-  applyUrl    String?
-  active      Boolean  @default(true)
-  expiresAt   DateTime?
-  createdAt   DateTime @default(now())
+  salary       String?
+  applyUrl     String?
+  active       Boolean   @default(true)
+  expiresAt    DateTime?
+  createdAt    DateTime  @default(now())
 }
 
 model MentorshipRequest {
   id        String   @id @default(uuid())
   menteeId  String
-  mentorId  String   // alumniId
+  mentorId  String // alumniId
   message   String
   status    String   @default("pending") // pending, accepted, rejected
   createdAt DateTime @default(now())
@@ -936,7 +980,7 @@ model AlumniEvent {
   description String
   date        DateTime
   location    String
-  type        String   // reunion, networking, seminar
+  type        String // reunion, networking, seminar
   rsvpUrl     String?
   published   Boolean  @default(false)
   createdAt   DateTime @default(now())
@@ -947,46 +991,45 @@ model AlumniEvent {
 // ═══════════════════════════════════════════════════════════════
 
 model FundingOpportunity {
-  id            String   @id @default(uuid())
-  title         String
-  organization  String
-  amount        String
-  deadline      DateTime
-  eligibility   String?
-  focus         String?  // research area
-  url           String?
-  status        String   @default("open") // open, closed
-  notified      Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id           String   @id @default(uuid())
+  title        String
+  organization String
+  amount       String
+  deadline     DateTime
+  eligibility  String?
+  focus        String? // research area
+  url          String?
+  status       String   @default("open") // open, closed
+  notified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model GrantApplication {
-  id              String   @id @default(uuid())
+  id              String    @id @default(uuid())
   opportunityId   String?
   title           String
   piName          String
-  coInvestigators Json?    // array of names
+  coInvestigators Json? // array of names
   amount          String
   deadline        DateTime?
-  status          String   @default("draft") // draft, submitted, under_review, awarded, rejected
+  status          String    @default("draft") // draft, submitted, under_review, awarded, rejected
   submittedAt     DateTime?
   decisionDate    DateTime?
-  documents       Json?    // array of {name, url}
+  documents       Json? // array of {name, url}
   notes           String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 model GrantBudget {
   id            String   @id @default(uuid())
   applicationId String
-  items         Json     // array of {category, description, amount}
+  items         Json // array of {category, description, amount}
   totalAmount   Float
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
-
 
 // ═══════════════════════════════════════════════════════════════
 // PHASE 9: VIRTUAL LAB & RESEARCH TOOLS
@@ -998,7 +1041,7 @@ model ResearchData {
   title       String
   description String?
   dataUrl     String
-  format      String?  // CSV, JSON, HDF5, etc
+  format      String? // CSV, JSON, HDF5, etc
   size        String?
   accessLevel String   @default("private") // public, private, restricted
   doi         String?
@@ -1014,7 +1057,7 @@ model LabNotebook {
   title       String
   content     String
   tags        Json?
-  attachments Json?    // array of file URLs
+  attachments Json? // array of file URLs
   author      String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1035,14 +1078,14 @@ model Experiment {
 }
 
 model EquipmentBooking {
-  id          String   @id @default(uuid())
-  equipment   String
-  userId      String
-  startTime   DateTime
-  endTime     DateTime
-  purpose     String?
-  status      String   @default("pending") // pending, confirmed, cancelled
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  equipment String
+  userId    String
+  startTime DateTime
+  endTime   DateTime
+  purpose   String?
+  status    String   @default("pending") // pending, confirmed, cancelled
+  createdAt DateTime @default(now())
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1050,14 +1093,14 @@ model EquipmentBooking {
 // ═══════════════════════════════════════════════════════════════
 
 model LivePoll {
-  id          String   @id @default(uuid())
-  courseId    String?
-  question    String
-  options     Json     // array of strings
-  type        String   @default("multiple_choice") // multiple_choice, word_cloud, rating
-  active      Boolean  @default(false)
-  anonymous   Boolean  @default(true)
-  createdAt   DateTime @default(now())
+  id        String   @id @default(uuid())
+  courseId  String?
+  question  String
+  options   Json // array of strings
+  type      String   @default("multiple_choice") // multiple_choice, word_cloud, rating
+  active    Boolean  @default(false)
+  anonymous Boolean  @default(true)
+  createdAt DateTime @default(now())
 }
 
 model PollResponse {
@@ -1069,41 +1112,41 @@ model PollResponse {
 }
 
 model Quiz {
-  id          String   @id @default(uuid())
-  courseId    String
-  title       String
-  description String?
-  timeLimit   Int?     // minutes
-  passingScore Float   @default(70)
-  questions   Json     // array of question objects
-  published   Boolean  @default(false)
-  availableFrom DateTime?
+  id             String    @id @default(uuid())
+  courseId       String
+  title          String
+  description    String?
+  timeLimit      Int? // minutes
+  passingScore   Float     @default(70)
+  questions      Json // array of question objects
+  published      Boolean   @default(false)
+  availableFrom  DateTime?
   availableUntil DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model QuizAttempt {
-  id        String   @id @default(uuid())
-  quizId    String
-  studentId String
-  answers   Json     // {questionId: answer}
-  score     Float
-  startedAt DateTime @default(now())
+  id          String    @id @default(uuid())
+  quizId      String
+  studentId   String
+  answers     Json // {questionId: answer}
+  score       Float
+  startedAt   DateTime  @default(now())
   submittedAt DateTime?
-  timeSpent Int?     // seconds
+  timeSpent   Int? // seconds
 }
 
 model QuizQuestion {
-  id          String   @id @default(uuid())
-  quizId      String
-  question    String
-  type        String   // multiple_choice, true_false, short_answer
-  options     Json?
+  id            String  @id @default(uuid())
+  quizId        String
+  question      String
+  type          String // multiple_choice, true_false, short_answer
+  options       Json?
   correctAnswer String
-  points      Float    @default(1)
-  explanation String?
-  order       Int      @default(0)
+  points        Float   @default(1)
+  explanation   String?
+  order         Int     @default(0)
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1125,9 +1168,9 @@ model Achievement {
   description String
   icon        String?
   points      Int      @default(10)
-  category    String?  // academic, participation, social
+  category    String? // academic, participation, social
   rarity      String   @default("common") // common, rare, epic, legendary
-  criteria    Json?    // conditions to earn
+  criteria    Json? // conditions to earn
   createdAt   DateTime @default(now())
 }
 
@@ -1136,15 +1179,15 @@ model StudentAchievement {
   studentId     String
   achievementId String
   earnedAt      DateTime @default(now())
-  progress      Int?     // for progressive achievements
+  progress      Int? // for progressive achievements
 }
 
 model Leaderboard {
   id        String   @id @default(uuid())
   courseId  String?
-  type      String   // points, submissions, participation
-  period    String   // weekly, monthly, all_time
-  data      Json     // array of {studentId, score}
+  type      String // points, submissions, participation
+  period    String // weekly, monthly, all_time
+  data      Json // array of {studentId, score}
   updatedAt DateTime @updatedAt
 }
 
@@ -1162,13 +1205,13 @@ model Challenge {
 }
 
 model ChallengeProgress {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   challengeId String
   studentId   String
-  progress    Float    @default(0) // 0-100
-  completed   Boolean  @default(false)
+  progress    Float     @default(0) // 0-100
+  completed   Boolean   @default(false)
   completedAt DateTime?
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1179,8 +1222,8 @@ model AIConversation {
   id        String   @id @default(uuid())
   userId    String?
   sessionId String
-  messages  Json     // array of {role, content, timestamp}
-  context   String?  // course, research, admin
+  messages  Json // array of {role, content, timestamp}
+  context   String? // course, research, admin
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -1202,23 +1245,22 @@ model DocumentSummary {
   generatedAt DateTime @default(now())
 }
 
-
 // ═══════════════════════════════════════════════════════════════
 // PHASE 13: CERTIFICATES
 // ═══════════════════════════════════════════════════════════════
 
 model Certificate {
-  id            String   @id @default(uuid())
-  studentId     String
-  courseId      String?
-  type          String   // course_completion, achievement, participation
-  title         String
-  description   String?
-  issueDate     DateTime @default(now())
-  certificateUrl String
-  verificationCode String @unique
-  blockchainHash String?
-  createdAt     DateTime @default(now())
+  id               String   @id @default(uuid())
+  studentId        String
+  courseId         String?
+  type             String // course_completion, achievement, participation
+  title            String
+  description      String?
+  issueDate        DateTime @default(now())
+  certificateUrl   String
+  verificationCode String   @unique
+  blockchainHash   String?
+  createdAt        DateTime @default(now())
 }
 
 model CertificateTemplate {
@@ -1226,7 +1268,7 @@ model CertificateTemplate {
   name        String
   htmlContent String
   cssContent  String?
-  variables   Json?    // placeholders like {studentName}
+  variables   Json? // placeholders like {studentName}
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -1245,20 +1287,20 @@ model CertificateVerification {
 // ═══════════════════════════════════════════════════════════════
 
 model MarketplaceItem {
-  id          String   @id @default(uuid())
-  sellerId    String   // userId (admin or contributor)
-  title       String
-  description String
-  category    String   // lecture_notes, datasets, templates, code
-  price       Float    @default(0) // 0 for free
-  fileUrl     String
-  previewUrl  String?
+  id           String   @id @default(uuid())
+  sellerId     String // userId (admin or contributor)
+  title        String
+  description  String
+  category     String // lecture_notes, datasets, templates, code
+  price        Float    @default(0) // 0 for free
+  fileUrl      String
+  previewUrl   String?
   thumbnailUrl String?
-  downloads   Int      @default(0)
-  rating      Float?
-  published   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  downloads    Int      @default(0)
+  rating       Float?
+  published    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model MarketplacePurchase {
@@ -1275,7 +1317,7 @@ model MarketplaceReview {
   id        String   @id @default(uuid())
   itemId    String
   userId    String
-  rating    Int      // 1-5
+  rating    Int // 1-5
   comment   String?
   createdAt DateTime @default(now())
 }
@@ -1299,27 +1341,27 @@ model SellerProfile {
 model Translation {
   id        String   @id @default(uuid())
   key       String
-  language  String   // en, sw, fr, etc
+  language  String // en, sw, fr, etc
   value     String
-  category  String?  // ui, content, email
+  category  String? // ui, content, email
   approved  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@unique([key, language])
 }
 
 model ContentTranslation {
-  id            String   @id @default(uuid())
-  contentType   String   // publication, course, blog_post
-  contentId     String
-  language      String
-  translatedFields Json  // {field: translatedValue}
-  status        String   @default("draft") // draft, published
-  translatedBy  String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  
+  id               String   @id @default(uuid())
+  contentType      String // publication, course, blog_post
+  contentId        String
+  language         String
+  translatedFields Json // {field: translatedValue}
+  status           String   @default("draft") // draft, published
+  translatedBy     String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
   @@unique([contentType, contentId, language])
 }
 
@@ -1328,36 +1370,36 @@ model ContentTranslation {
 // ═══════════════════════════════════════════════════════════════
 
 model Integration {
-  id          String   @id @default(uuid())
-  name        String   // google, microsoft, zoom, github, etc
-  type        String   // oauth, api_key, webhook
-  config      Json     // credentials and settings (encrypted)
-  active      Boolean  @default(false)
-  lastSync    DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String    @id @default(uuid())
+  name      String // google, microsoft, zoom, github, etc
+  type      String // oauth, api_key, webhook
+  config    Json // credentials and settings (encrypted)
+  active    Boolean   @default(false)
+  lastSync  DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model SyncLog {
   id            String   @id @default(uuid())
   integrationId String
-  syncType      String   // publications, calendar, etc
-  status        String   // success, failed, partial
+  syncType      String // publications, calendar, etc
+  status        String // success, failed, partial
   itemsSync     Int?
   errorMessage  String?
   syncedAt      DateTime @default(now())
 }
 
 model OAuthToken {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   userId       String
-  provider     String   // google, microsoft, github
+  provider     String // google, microsoft, github
   accessToken  String
   refreshToken String?
   expiresAt    DateTime?
   scope        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1365,17 +1407,17 @@ model OAuthToken {
 // ═══════════════════════════════════════════════════════════════
 
 model NewsletterCampaign {
-  id          String   @id @default(uuid())
-  subject     String
-  content     String
-  templateId  String?
-  status      String   @default("draft") // draft, scheduled, sent
+  id           String    @id @default(uuid())
+  subject      String
+  content      String
+  templateId   String?
+  status       String    @default("draft") // draft, scheduled, sent
   scheduledFor DateTime?
-  sentAt      DateTime?
-  recipients  Int?
-  opens       Int      @default(0)
-  clicks      Int      @default(0)
-  createdAt   DateTime @default(now())
+  sentAt       DateTime?
+  recipients   Int?
+  opens        Int       @default(0)
+  clicks       Int       @default(0)
+  createdAt    DateTime  @default(now())
 }
 
 model EmailTemplate {
@@ -1384,31 +1426,31 @@ model EmailTemplate {
   subject     String
   htmlContent String
   variables   Json?
-  category    String?  // newsletter, notification, reminder
+  category    String? // newsletter, notification, reminder
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
 
 model EmailLog {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   to         String
   subject    String
-  status     String   // sent, failed, bounced
+  status     String // sent, failed, bounced
   campaignId String?
-  sentAt     DateTime @default(now())
+  sentAt     DateTime  @default(now())
   openedAt   DateTime?
   error      String?
 }
 
 model SMSNotification {
-  id        String   @id @default(uuid())
-  to        String   // phone number
+  id        String    @id @default(uuid())
+  to        String // phone number
   message   String
-  status    String   @default("pending") // pending, sent, failed
+  status    String    @default("pending") // pending, sent, failed
   sentAt    DateTime?
   error     String?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1416,14 +1458,14 @@ model SMSNotification {
 // ═══════════════════════════════════════════════════════════════
 
 model AccessibilityPreference {
-  id          String   @id @default(uuid())
-  userId      String   @unique
-  highContrast Boolean @default(false)
-  fontSize    String   @default("medium") // small, medium, large, xlarge
-  screenReader Boolean @default(false)
-  dyslexiaFont Boolean @default(false)
-  reducedMotion Boolean @default(false)
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  userId        String   @unique
+  highContrast  Boolean  @default(false)
+  fontSize      String   @default("medium") // small, medium, large, xlarge
+  screenReader  Boolean  @default(false)
+  dyslexiaFont  Boolean  @default(false)
+  reducedMotion Boolean  @default(false)
+  updatedAt     DateTime @updatedAt
 }
 
 model MediaAltText {
@@ -1439,34 +1481,34 @@ model MediaAltText {
 // ═══════════════════════════════════════════════════════════════
 
 model MobileDevice {
-  id          String   @id @default(uuid())
-  userId      String
-  deviceId    String   @unique
-  platform    String   // ios, android
-  pushToken   String?
-  appVersion  String?
-  lastActive  DateTime @updatedAt
-  createdAt   DateTime @default(now())
+  id         String   @id @default(uuid())
+  userId     String
+  deviceId   String   @unique
+  platform   String // ios, android
+  pushToken  String?
+  appVersion String?
+  lastActive DateTime @updatedAt
+  createdAt  DateTime @default(now())
 }
 
 model PushNotification {
-  id        String   @id @default(uuid())
+  id        String    @id @default(uuid())
   userId    String
   title     String
   body      String
   data      Json?
-  status    String   @default("pending") // pending, sent, failed
+  status    String    @default("pending") // pending, sent, failed
   sentAt    DateTime?
   readAt    DateTime?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
 }
 
 model OfflineSync {
-  id        String   @id @default(uuid())
-  userId    String
-  dataType  String   // courses, materials, grades
-  data      Json
-  syncedAt  DateTime @default(now())
+  id       String   @id @default(uuid())
+  userId   String
+  dataType String // courses, materials, grades
+  data     Json
+  syncedAt DateTime @default(now())
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1474,36 +1516,36 @@ model OfflineSync {
 // ═══════════════════════════════════════════════════════════════
 
 model AnalyticsEvent {
-  id          String   @id @default(uuid())
-  eventType   String   // page_view, video_watch, download, etc
-  userId      String?
-  sessionId   String?
-  properties  Json?    // event-specific data
-  timestamp   DateTime @default(now())
-  ipAddress   String?
-  userAgent   String?
-  country     String?
+  id         String   @id @default(uuid())
+  eventType  String // page_view, video_watch, download, etc
+  userId     String?
+  sessionId  String?
+  properties Json? // event-specific data
+  timestamp  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+  country    String?
 }
 
 model StudentEngagement {
-  id           String   @id @default(uuid())
-  studentId    String
-  courseId     String?
-  metric       String   // login_frequency, assignment_completion, etc
-  value        Float
-  period       String   // daily, weekly, monthly
-  date         DateTime
-  createdAt    DateTime @default(now())
-  
+  id        String   @id @default(uuid())
+  studentId String
+  courseId  String?
+  metric    String // login_frequency, assignment_completion, etc
+  value     Float
+  period    String // daily, weekly, monthly
+  date      DateTime
+  createdAt DateTime @default(now())
+
   @@unique([studentId, metric, period, date])
 }
 
 model PredictiveAnalytic {
-  id         String   @id @default(uuid())
-  studentId  String
-  riskScore  Float    // 0-100
-  factors    Json     // contributing factors
-  suggestions Json?   // recommended interventions
+  id           String   @id @default(uuid())
+  studentId    String
+  riskScore    Float // 0-100
+  factors      Json // contributing factors
+  suggestions  Json? // recommended interventions
   calculatedAt DateTime @default(now())
 }
 
@@ -1511,8 +1553,8 @@ model ABTest {
   id          String   @id @default(uuid())
   name        String
   description String?
-  variants    Json     // array of variants
-  metrics     Json     // {variantId: {visits, conversions}}
+  variants    Json // array of variants
+  metrics     Json // {variantId: {visits, conversions}}
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
