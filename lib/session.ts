@@ -1,16 +1,19 @@
-import type { SessionOptions } from 'iron-session';
+import { SessionOptions } from "iron-session";
 
 export interface SessionData {
-  username: string;
-  createdAt: number;
+  username?: string;
+  studentId?: string;
+  role?: "admin" | "student";
+  createdAt?: number;
 }
 
 export const sessionOptions: SessionOptions = {
-  cookieName: 'prof-website-session',
-  password: process.env.SESSION_SECRET as string,
+  password: process.env.SESSION_SECRET || "2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f",
+  cookieName: "mbita_session",
   cookieOptions: {
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+    sameSite: "lax" as const,
   },
 };
