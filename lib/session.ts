@@ -1,9 +1,11 @@
-import { SessionOptions } from "iron-session";
+import { SessionOptions, getIronSession } from "iron-session";
+import { cookies } from "next/headers";
 
 export interface SessionData {
   username?: string;
   studentId?: string;
   role?: "admin" | "student";
+  isAdmin?: boolean;
   createdAt?: number;
 }
 
@@ -17,3 +19,8 @@ export const sessionOptions: SessionOptions = {
     sameSite: "lax" as const,
   },
 };
+
+export async function getSession() {
+  const session = await getIronSession<SessionData>(cookies(), sessionOptions);
+  return session;
+}
