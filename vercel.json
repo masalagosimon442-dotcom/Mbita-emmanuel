@@ -1,18 +1,5 @@
 {
-  "services": {
-    "professor-website": {
-      "root": ".",
-      "framework": "nextjs",
-      "buildCommand": "npm install && npx prisma generate && npx prisma db push && npm run build"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "type": "service",
-        "service": "professor-website"
-      }
-    }
-  ]
+  "buildCommand": "prisma generate && prisma db push && next build",
+  "installCommand": "npm install",
+  "framework": "nextjs"
 }
