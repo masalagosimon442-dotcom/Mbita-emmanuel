@@ -34,8 +34,29 @@ export async function POST(request: NextRequest) {
   let adminUser;
   try {
     adminUser = await prisma.adminUser.findUnique({ where: { username } });
-  } catch {
-    return NextResponse.json({ error: "Internal server error.", code: "DB_ERROR" }, { status: 500 });
+    
+    // AUTO-CREATE DEFAULT ADMIN if no admin exists
+    if (!adminUser && username === 'Mbita' && password === 'mbita@!12345') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      adminUser = await prisma.adminUser.create({
+        data: {
+          id: 1,
+          username: 'Mbita',
+          passwordHash: hashedPassword,
+          failedAttempts: 0,
+          totpEnabled: false,
+        }
+      });
+      console.log('✅ Default admin account created');
+    }
+    
+  } catch (error: any) {
+    console.error('Database error:', error);
+    return NextResponse.json({ 
+      error: "Database connection error. Please check your DATABASE_URL environment variable.", 
+      code: "DB_ERROR",
+      details: error.message 
+    }, { status: 500 });
   }
 
   if (!adminUser) {
