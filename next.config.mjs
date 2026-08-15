@@ -23,9 +23,6 @@ const nextConfig = {
     return config;
   },
 
-  // Output standalone for Vercel (includes Prisma binaries)
-  output: 'standalone',
-
   // Allow images from any domain (for Unsplash demo images etc.)
   images: {
     remotePatterns: [
