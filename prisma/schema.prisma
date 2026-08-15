@@ -332,6 +332,8 @@ model SiteSettings {
   hiddenSections         Json
   heroVideoUrl           String?
   heroImageUrl           String?
+  // ── Navigation Bar Controls ──
+  navigationSettings     Json?    // Controls which nav items are visible
   // ── Home page section controls ──
   showAnnouncements      Boolean  @default(true)
   showStats              Boolean  @default(true)
