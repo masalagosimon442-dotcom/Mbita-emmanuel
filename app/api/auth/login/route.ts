@@ -33,6 +33,9 @@ export async function POST(request: NextRequest) {
 
   let adminUser;
   try {
+    // Test database connection first
+    await prisma.$queryRaw`SELECT 1`;
+    
     adminUser = await prisma.adminUser.findUnique({ where: { username } });
     
     // AUTO-CREATE DEFAULT ADMIN if no admin exists
@@ -52,10 +55,23 @@ export async function POST(request: NextRequest) {
     
   } catch (error: any) {
     console.error('Database error:', error);
+    
+    // Provide more specific error messages
+    let errorMessage = 'Database connection error.';
+    if (error.code === 'P1001') {
+      errorMessage = 'Cannot reach database server. Please check your DATABASE_URL.';
+    } else if (error.code === 'P1000') {
+      errorMessage = 'Authentication failed with database. Check database credentials.';
+    } else if (error.code === 'P1003') {
+      errorMessage = 'Database does not exist. Please check your DATABASE_URL.';
+    } else if (error.message) {
+      errorMessage = `Database error: ${error.message}`;
+    }
+    
     return NextResponse.json({ 
-      error: "Database connection error. Please check your DATABASE_URL environment variable.", 
+      error: errorMessage, 
       code: "DB_ERROR",
-      details: error.message 
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     }, { status: 500 });
   }
 
