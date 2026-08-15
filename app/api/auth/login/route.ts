@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getIronSession } from "iron-session";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { Pool } from "pg";
 import { sessionOptions, SessionData } from "@/lib/session";
 
 const loginSchema = z.object({
@@ -10,6 +10,10 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
   totpToken: z.string().optional(), // MFA token (6 digits)
 });
+
+// Use native PostgreSQL connection to bypass Prisma engine issues on Vercel
+const databaseUrl = process.env.POSTGRES_URL || process.env.DATABASE_URL;
+const pool = new Pool({ connectionString: databaseUrl });
 
 export async function POST(request: NextRequest) {
   let body: unknown;
@@ -31,26 +35,40 @@ export async function POST(request: NextRequest) {
 
   const { username, password, totpToken } = result.data;
 
-  let adminUser;
+  let adminUser: any;
   try {
     // Test database connection first
-    await prisma.$queryRaw`SELECT 1`;
+    await pool.query('SELECT 1');
     
-    adminUser = await prisma.adminUser.findUnique({ where: { username } });
+    // Find admin user
+    const userResult = await pool.query(
+      'SELECT * FROM "AdminUser" WHERE username = $1 LIMIT 1',
+      [username]
+    );
+    adminUser = userResult.rows[0];
     
     // AUTO-CREATE DEFAULT ADMIN if no admin exists
     if (!adminUser && username === 'Mbita' && password === 'mbita@!12345') {
       const hashedPassword = await bcrypt.hash(password, 10);
-      adminUser = await prisma.adminUser.create({
-        data: {
-          id: 1,
-          username: 'Mbita',
-          passwordHash: hashedPassword,
-          failedAttempts: 0,
-          totpEnabled: false,
-        }
-      });
-      console.log('✅ Default admin account created');
+      const createResult = await pool.query(
+        `INSERT INTO "AdminUser" (id, username, "passwordHash", "failedAttempts", "totpEnabled", "updatedAt")
+         VALUES (1, $1, $2, 0, false, NOW())
+         ON CONFLICT (id) DO NOTHING
+         RETURNING *`,
+        ['Mbita', hashedPassword]
+      );
+      adminUser = createResult.rows[0];
+      
+      if (adminUser) {
+        console.log('✅ Default admin account created');
+      } else {
+        // Try to fetch again in case another request created it
+        const retryResult = await pool.query(
+          'SELECT * FROM "AdminUser" WHERE username = $1 LIMIT 1',
+          [username]
+        );
+        adminUser = retryResult.rows[0];
+      }
     }
     
   } catch (error: any) {
@@ -58,11 +76,9 @@ export async function POST(request: NextRequest) {
     
     // Provide more specific error messages
     let errorMessage = 'Database connection error.';
-    if (error.code === 'P1001') {
-      errorMessage = 'Cannot reach database server. Please check your DATABASE_URL.';
-    } else if (error.code === 'P1000') {
+    if (error.code === '28P01') {
       errorMessage = 'Authentication failed with database. Check database credentials.';
-    } else if (error.code === 'P1003') {
+    } else if (error.code === '3D000') {
       errorMessage = 'Database does not exist. Please check your DATABASE_URL.';
     } else if (error.message) {
       errorMessage = `Database error: ${error.message}`;
@@ -80,8 +96,8 @@ export async function POST(request: NextRequest) {
   }
 
   // Check lockout
-  if (adminUser.lockedUntil && adminUser.lockedUntil > new Date()) {
-    const minutesLeft = Math.ceil((adminUser.lockedUntil.getTime() - Date.now()) / 60000);
+  if (adminUser.lockedUntil && new Date(adminUser.lockedUntil) > new Date()) {
+    const minutesLeft = Math.ceil((new Date(adminUser.lockedUntil).getTime() - Date.now()) / 60000);
     return NextResponse.json({
       error: `Account is temporarily locked. Please try again in ${minutesLeft} minute(s).`,
       code: "ACCOUNT_LOCKED",
@@ -94,13 +110,13 @@ export async function POST(request: NextRequest) {
   if (!passwordMatch) {
     const newFailedAttempts = adminUser.failedAttempts + 1;
     const shouldLock = newFailedAttempts >= 5;
-    await prisma.adminUser.update({
-      where: { id: adminUser.id },
-      data: {
-        failedAttempts: newFailedAttempts,
-        lockedUntil: shouldLock ? new Date(Date.now() + 15 * 60 * 1000) : null,
-      },
-    });
+    const lockedUntil = shouldLock ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : null;
+    
+    await pool.query(
+      `UPDATE "AdminUser" SET "failedAttempts" = $1, "lockedUntil" = $2, "updatedAt" = NOW() WHERE id = $3`,
+      [newFailedAttempts, lockedUntil, adminUser.id]
+    );
+    
     if (shouldLock) {
       return NextResponse.json({ error: "Too many failed attempts. Account locked for 15 minutes.", code: "ACCOUNT_LOCKED" }, { status: 423 });
     }
@@ -123,21 +139,23 @@ export async function POST(request: NextRequest) {
   }
 
   // On success reset failed attempts and create session
-  await prisma.adminUser.update({
-    where: { id: adminUser.id },
-    data: { failedAttempts: 0, lockedUntil: null },
-  });
+  await pool.query(
+    `UPDATE "AdminUser" SET "failedAttempts" = 0, "lockedUntil" = NULL, "updatedAt" = NOW() WHERE id = $1`,
+    [adminUser.id]
+  );
 
   // Log successful login
   try {
-    await prisma.securityLog.create({
-      data: {
-        event: "login_success",
-        username: adminUser.username,
-        ipAddress: request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "unknown",
-        details: "Successful login",
-      },
-    });
+    await pool.query(
+      `INSERT INTO "SecurityLog" (id, event, username, "ipAddress", details, "createdAt")
+       VALUES (gen_random_uuid(), $1, $2, $3, $4, NOW())`,
+      [
+        'login_success',
+        adminUser.username,
+        request.headers.get("x-forwarded-for") ?? request.headers.get("x-real-ip") ?? "unknown",
+        'Successful login'
+      ]
+    );
   } catch { /* non-fatal */ }
 
   const response = NextResponse.json({ message: "Login successful." }, { status: 200 });
