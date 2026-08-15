@@ -1,0 +1,64 @@
+============================================
+🔑 VERCEL ENVIRONMENT VARIABLES
+============================================
+
+Copy and paste these 4 variables into Vercel:
+
+============================================
+VARIABLE 1: POSTGRES_URL
+============================================
+Key:   POSTGRES_URL
+Value: postgresql://neondb_owner:npg_BMXlO3CKg6vw@ep-delicate-queen-ayjuc6e1-pooler.c-5.us-east-2.aws.neon.tech/Machiya?sslmode=require
+
+============================================
+VARIABLE 2: DATABASE_URL
+============================================
+Key:   DATABASE_URL
+Value: postgresql://neondb_owner:npg_BMXlO3CKg6vw@ep-delicate-queen-ayjuc6e1-pooler.c-5.us-east-2.aws.neon.tech/Machiya?sslmode=require
+
+============================================
+VARIABLE 3: NEXTAUTH_SECRET
+============================================
+Key:   NEXTAUTH_SECRET
+Value: 2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f
+
+============================================
+VARIABLE 4: SESSION_SECRET
+============================================
+Key:   SESSION_SECRET
+Value: 2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f
+
+============================================
+OR PASTE ALL AT ONCE (Import .env):
+============================================
+
+POSTGRES_URL=postgresql://neondb_owner:npg_BMXlO3CKg6vw@ep-delicate-queen-ayjuc6e1-pooler.c-5.us-east-2.aws.neon.tech/Machiya?sslmode=require
+DATABASE_URL=postgresql://neondb_owner:npg_BMXlO3CKg6vw@ep-delicate-queen-ayjuc6e1-pooler.c-5.us-east-2.aws.neon.tech/Machiya?sslmode=require
+NEXTAUTH_SECRET=2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f
+SESSION_SECRET=2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f
+
+============================================
+HOW TO ADD IN VERCEL:
+============================================
+
+Method 1: Import (EASIEST)
+1. Go to Vercel Environment Variables
+2. Click "Import .env"
+3. Paste the 4 lines above
+4. Click "Import"
+
+Method 2: Add One by One
+1. Add each variable manually
+2. Make sure to select "Production and Preview"
+3. Click "Save"
+
+============================================
+AFTER ADDING:
+============================================
+
+1. Click "Save" button
+2. Click "Redeploy" (if project already deployed)
+3. Wait 1-2 minutes
+4. Try logging in again
+
+============================================
