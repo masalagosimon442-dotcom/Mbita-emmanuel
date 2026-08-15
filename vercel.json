@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "app/**/*.{js,ts,jsx,tsx}": {
+      "includeFiles": "node_modules/.prisma/client/**"
+    }
+  },
+  "build": {
+    "env": {
+      "PRISMA_GENERATE_SKIP_AUTOINSTALL": "false",
+      "SKIP_ENV_VALIDATION": "true"
+    }
+  }
+}
