@@ -1,0 +1,68 @@
+========================================
+VERCEL ENVIRONMENT VARIABLES - STEP BY STEP
+========================================
+
+PROBLEM: Vercel needs Key and Value separately
+SOLUTION: Add them ONE AT A TIME
+
+========================================
+VARIABLE 1 - DATABASE_URL
+========================================
+
+STEP 1: In Vercel, scroll UP to see "Key" field at the TOP
+STEP 2: In the "Key" field, type exactly:
+
+DATABASE_URL
+
+STEP 3: In the "Value" field below, copy and paste this:
+
+postgresql://neondb_owner:npg_BMXlO3CKg6vw@ep-delicate-queen-ayjuc6e1-pooler.c-5.us-east-2.aws.neon.tech/Machiya?sslmode=require
+
+STEP 4: Keep "Sensitive" toggle ON (blue)
+STEP 5: Keep "Production and Preview" selected
+STEP 6: Click "Add Another" button
+
+========================================
+VARIABLE 2 - SESSION_SECRET
+========================================
+
+STEP 7: In the NEW "Key" field, type exactly:
+
+SESSION_SECRET
+
+STEP 8: In the "Value" field, copy and paste this:
+
+2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f
+
+STEP 9: Keep "Sensitive" toggle ON
+STEP 10: Keep "Production and Preview" selected
+STEP 11: Click "Save" button (bottom right)
+
+========================================
+THEN DEPLOY
+========================================
+
+After saving both variables, click the "Deploy" button!
+
+========================================
+IMPORTANT TIPS:
+========================================
+
+1. SCROLL UP in the dialog to see Key/Value fields
+2. Type the KEY exactly (no extra spaces)
+3. COPY-PASTE the VALUE (don't type it)
+4. Add them ONE AT A TIME
+5. Don't forget to click "Add Another" after first one
+6. Click "Save" only after BOTH are added
+
+========================================
+
+I also created separate files for easy copying:
+- vercel-variable-1-KEY.txt = DATABASE_URL
+- vercel-variable-1-VALUE.txt = (database connection)
+- vercel-variable-2-KEY.txt = SESSION_SECRET
+- vercel-variable-2-VALUE.txt = (secret key)
+
+Open these files and copy from them!
+
+========================================
