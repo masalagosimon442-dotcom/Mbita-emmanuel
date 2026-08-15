@@ -4,8 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_URL") // Vercel default, fallback to DATABASE_URL
-  directUrl = env("DATABASE_URL") // For migrations
+  url      = env("DATABASE_URL")
 }
 
 model Profile {

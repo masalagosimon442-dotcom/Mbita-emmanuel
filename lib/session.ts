@@ -10,7 +10,7 @@ export interface SessionData {
 }
 
 export const sessionOptions: SessionOptions = {
-  password: process.env.SESSION_SECRET || process.env.NEXTAUTH_SECRET || "2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f",
+  password: process.env.NEXTAUTH_SECRET || process.env.SESSION_SECRET || "2085db4540e70e2f74fdbabcbf8493fd641cd9700ee9e932290e7fd5ead1b28f",
   cookieName: "mbita_session",
   cookieOptions: {
     secure: process.env.NODE_ENV === "production",
