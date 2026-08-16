@@ -59,23 +59,23 @@ describe('Middleware', () => {
   });
 
   describe('Session Validation', () => {
-    it('should validate session max age', () => {
+    it('should validate session max age constant', () => {
       const SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8 hours
       const eightHours = 28800000; // 8 * 60 * 60 * 1000
       
       expect(SESSION_MAX_AGE_MS).toBe(eightHours);
     });
 
-    it('should detect expired sessions', () => {
+    it('should detect expired sessions correctly', () => {
       const SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000;
       const now = Date.now();
-      const ninHoursAgo = now - (9 * 60 * 60 * 1000);
+      const nineHoursAgo = now - (9 * 60 * 60 * 1000);
       
       const isExpired = now - nineHoursAgo > SESSION_MAX_AGE_MS;
       expect(isExpired).toBe(true);
     });
 
-    it('should allow valid sessions', () => {
+    it('should allow valid sessions correctly', () => {
       const SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000;
       const now = Date.now();
       const twoHoursAgo = now - (2 * 60 * 60 * 1000);
