@@ -10,11 +10,19 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
 
-  // Tell webpack to ignore optional packages not installed
+  // Tell webpack to properly resolve modules
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [...(config.externals || []), "openai"];
     }
+    
+    // Ensure proper module resolution
+    config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js', '.json'];
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': __dirname,
+    };
+    
     return config;
   },
 
