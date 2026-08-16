@@ -18,10 +18,6 @@ const nextConfig = {
     
     // Ensure proper module resolution
     config.resolve.extensions = ['.tsx', '.ts', '.jsx', '.js', '.json'];
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': __dirname,
-    };
     
     return config;
   },
