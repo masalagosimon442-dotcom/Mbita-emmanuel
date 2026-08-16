@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Faster dev builds
-  experimental: {
-    optimizePackageImports: ["@prisma/client"],
-  },
-
   // Ignore ESLint errors during build (warnings only)
   eslint: {
     ignoreDuringBuilds: true,
@@ -20,15 +15,8 @@ const nextConfig = {
     if (isServer) {
       config.externals = [...(config.externals || []), "openai"];
     }
-    // Ensure Prisma binaries are included in the bundle
-    config.externals.push({
-      "@prisma/client": "commonjs @prisma/client",
-    });
     return config;
   },
-
-  // Output configuration for Vercel deployments
-  output: "standalone",
 
   // Allow images from any domain (for Unsplash demo images etc.)
   images: {
