@@ -3,6 +3,8 @@ import { getIronSession } from "iron-session";
 import { prisma } from "@/lib/prisma";
 import { sessionOptions, SessionData } from "@/lib/session";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const session = await getIronSession<SessionData>(request, NextResponse.next(), sessionOptions);
