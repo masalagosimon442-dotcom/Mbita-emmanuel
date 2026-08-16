@@ -20,8 +20,15 @@ const nextConfig = {
     if (isServer) {
       config.externals = [...(config.externals || []), "openai"];
     }
+    // Ensure Prisma binaries are included in the bundle
+    config.externals.push({
+      "@prisma/client": "commonjs @prisma/client",
+    });
     return config;
   },
+
+  // Output configuration for Vercel deployments
+  output: "standalone",
 
   // Allow images from any domain (for Unsplash demo images etc.)
   images: {
